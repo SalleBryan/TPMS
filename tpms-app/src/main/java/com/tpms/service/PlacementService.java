@@ -16,7 +16,7 @@ public class PlacementService {
     private final Map<String, Set<String>> trainingEnrollments = new HashMap<>();
 
     // default CGPA threshold
-    private double minCgpaForPlacement = 7.0;
+    private double minCgpaForPlacement = 2.5;
 
     public PlacementService(StudentService studentService,
                             JobService jobService,
