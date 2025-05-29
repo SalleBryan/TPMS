@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training & Placement Management System</title>
+    <link href="job.css" rel="stylesheet">
+    <script src="job.js" defer></script>
+</head>
+<body class="body">
+    <header class="header">
+        <div class="container header-content">
+            <h1 class="header-title">Training & Placement Management System</h1>
+            <div id="navButtons" class="nav-buttons"></div>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <div id="roleSelection" class="role-selection">
+            <h2 class="section-title">Select User Role:</h2>
+            <div class="role-buttons">
+                <button onclick="selectRole('admin')" class="btn btn-primary">Admin</button>
+                <button onclick="selectRole('student')" class="btn btn-primary">Student</button>
+                <button onclick="selectRole('recruiter')" class="btn btn-primary">Recruiter</button>
+            </div>
+        </div>
+
+        <!-- Student View -->
+        <div id="studentView" class="view hidden">
+            <h2 class="section-title">Available Job Listings</h2>
+            <div class="table-container">
+                <table id="jobTable" class="table">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="table-th">Job ID</th>
+                            <th class="table-th">Title</th>
+                            <th class="table-th">Company</th>
+                            <th class="table-th">Location</th>
+                            <th class="table-th">Deadline</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobTableBody" class="table-body">
+                        <!-- Jobs will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="grid">
+                <div class="grid-item job-details">
+                    <h3 class="subsection-title">Job Details</h3>
+                    <div id="jobDetailsArea" class="card">
+                        <p class="text-muted">Select a job to view details</p>
+                    </div>
+                </div>
+                <div class="grid-item actions">
+                    <h3 class="subsection-title">Actions</h3>
+                    <div class="card action-buttons">
+                        <button id="applyButton" disabled class="btn btn-success disabled">Apply</button>
+                        <button id="withdrawButton" disabled class="btn btn-danger disabled">Withdraw</button>
+                    </div>
+                    <div id="applicationStatus" class="card hidden">
+                        <h3 class="subsection-title">Your Applications</h3>
+                        <ul id="applicationsList" class="application-list">
+                            <!-- Applications will be added here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recruiter View -->
+        <div id="recruiterView" class="view hidden">
+            <div class="grid">
+                <div class="grid-item">
+                    <h2 class="section-title">Post New Job</h2>
+                    <form id="jobPostForm" class="form">
+                        <div class="form-group">
+                            <label for="titleField" class="form-label">Title</label>
+                            <input type="text" id="titleField" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="companyField" class="form-label">Company</label>
+                            <input type="text" id="companyField" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="locationField" class="form-label">Location</label>
+                            <input type="text" id="locationField" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="deadlineField" class="form-label">Deadline</label>
+                            <input type="date" id="deadlineField" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="descriptionArea" class="form-label">Description</label>
+                            <textarea id="descriptionArea" rows="4" class="form-textarea"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Job</button>
+                    </form>
+                </div>
+                <div class="grid-item">
+                    <h2 class="section-title">Applicant Analytics</h2>
+                    <div class="analytics">
+                        <div class="analytics-item">
+                            <span>Total Posted Jobs</span>
+                            <span id="totalJobsCount" class="analytics-value">4</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span>Total Applications</span>
+                            <span id="totalApplicationsCount" class="analytics-value">0</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span>Upcoming Interviews</span>
+                            <span id="upcomingInterviewsCount" class="analytics-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="section-title">Your Posted Jobs</h2>
+            <div class="table-container">
+                <table class="table">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="table-th">ID</th>
+                            <th class="table-th">Title</th>
+                            <th class="table-th">Company</th>
+                            <th class="table-th">Location</th>
+                            <th class="table-th">Deadline</th>
+                            <th class="table-th">Description</th>
+                            <th class="table-th">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recruiterJobTableBody" class="table-body">
+                        <!-- Jobs will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Interview Schedule View (Admin Only) -->
+        <div id="interviewView" class="view hidden">
+            <div class="grid">
+                <div class="grid-item interview-table">
+                    <h2 class="section-title">Scheduled Interviews</h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="table-th">Interview ID</th>
+                                    <th class="table-th">Candidate</th>
+                                    <th class="table-th">Date</th>
+                                    <th class="table-th">Time</th>
+                                    <th class="table-th">Status</th>
+                                    <th class="table-th">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="interviewTableBody" class="table-body">
+                                <!-- Interviews will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <h2 class="section-title">Interview Calendar</h2>
+                    <div class="card calendar">
+                        <div class="calendar-header">
+                            <button id="prevMonth" class="calendar-nav">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <h3 id="currentMonthYear" class="calendar-title"></h3>
+                            <button id="nextMonth" class="calendar-nav">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="calendar-days-header">
+                            <div>Su</div>
+                            <div>Mo</div>
+                            <div>Tu</div>
+                            <div>We</div>
+                            <div>Th</div>
+                            <div>Fr</div>
+                            <div>Sa</div>
+                        </div>
+                        <div id="calendarDays" class="calendar-days"></div>
+                        <div class="calendar-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot scheduled"></span>
+                                <span>Interview Scheduled</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot today"></span>
+                                <span>Today</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card upcoming-interviews">
+                        <h3 class="subsection-title">Upcoming Interviews</h3>
+                        <ul id="upcomingInterviews" class="upcoming-list">
+                            <!-- Will be populated by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card schedule-form">
+                <h3 class="subsection-title">Schedule New Interview</h3>
+                <form id="scheduleInterviewForm" class="form grid-form">
+                    <div class="form-group">
+                        <label for="candidateField" class="form-label">Candidate</label>
+                        <input type="text" id="candidateField" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="interviewDateField" class="form-label">Date</label>
+                        <input type="date" id="interviewDateField" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="interviewTimeField" class="form-label">Time</label>
+                        <input type="time" id="interviewTimeField" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="interviewStatusField" class="form-label">Status</label>
+                        <select id="interviewStatusField" class="form-input">
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn btn-primary">Schedule Interview</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Training & Placement Management System © 2023</p>
+    </footer>
+
+    <!-- Modal for Popup Messages -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle" class="modal-title"></h3>
+            <p id="modalMessage" class="modal-message"></p>
+            <div id="modalClose"></div>
+        </div>
+    </div>
+</body>
+</html>
