@@ -1,45 +1,102 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Data storage
+    const users = {}; // { username: { password: string, role: string, secretId: string } }
+    let currentUser = null; // { username: string, role: string }
     const jobDescriptions = {
-        '201': 'Assist in development of software applications using modern frameworks. Collaborate with senior developers to implement new features and fix bugs.',
-        '202': 'Support data analysis projects, create visualizations, and work with large datasets to provide business insights.',
-        '203': 'Design user-friendly interfaces for web and mobile applications, collaborating with developers to ensure seamless functionality.',
-        '204': 'Develop and execute marketing campaigns, analyze performance metrics, and enhance brand presence across digital platforms.'
+        '201': 'Assist in development of software applications using modern frameworks.',
+        '202': 'Support data analysis projects with visualizations and large datasets.',
+        '203': 'Design user-friendly interfaces for web and mobile applications.',
+        '204': 'Develop and execute marketing campaigns to enhance digital presence.'
     };
-    let jobIdCounter = 205; // Start after sample jobs
-    let userRole = '';
+    let jobIdCounter = 205;
     const appliedJobs = new Set();
-    let interviewIdCounter = 3; // Start after sample interviews
-
-    // Calendar data - stores all interviews by date
+    let interviewIdCounter = 3;
     const interviewsByDate = {};
+
+    // Auth functions
+    window.showRegisterForm = function() {
+        document.getElementById('authSection').classList.add('hidden');
+        document.getElementById('registerForm').classList.remove('hidden');
+    };
+
+    window.showLoginForm = function() {
+        document.getElementById('authSection').classList.add('hidden');
+        document.getElementById('loginForm').classList.remove('hidden');
+    };
+
+    window.backToAuth = function() {
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('authSection').classList.remove('hidden');
+    };
+
+    function registerUser(username, password, secretId, role) {
+        if (!username || !password || !secretId || !role) {
+            showModal('Error', 'All fields are required.');
+            return false;
+        }
+        if (users[username]) {
+            showModal('Error', 'Username already exists.');
+            return false;
+        }
+        // Check if secret ID is unique
+        for (let user in users) {
+            if (users[user].secretId === secretId) {
+                showModal('Error', 'Secret ID is already in use.');
+                return false;
+            }
+        }
+        users[username] = { password, role, secretId };
+        return true;
+    }
+
+    function loginUser(username, password, secretId) {
+        if (!users[username]) {
+            showModal('Error', 'Username not found.');
+            return false;
+        }
+        if (users[username].password !== password) {
+            showModal('Error', 'Incorrect password.');
+            return false;
+        }
+        if (users[username].secretId !== secretId) {
+            showModal('Error', 'Invalid secret ID.');
+            return false;
+        }
+        currentUser = { username, role: users[username].role };
+        return true;
+    }
 
     // Initialize UI based on role
     window.selectRole = function(role) {
-        userRole = role;
-        document.getElementById('roleSelection').classList.add('hidden');
+        if (!currentUser) {
+            showModal('Error', 'Please login to access this role.');
+            return;
+        }
+        if (currentUser.role !== role) {
+            showModal('Error', `Access denied. You are logged in as a ${currentUser.role}.`);
+            return;
+        }
 
-        // Set up navigation buttons based on role
+        document.getElementById('authSection').classList.add('hidden');
+
+        // Set up navigation buttons
         const navButtons = document.getElementById('navButtons');
         navButtons.innerHTML = '';
 
-        if (role === 'admin' || role === 'student') {
+        if (role === 'student') {
             const studentBtn = document.createElement('button');
             studentBtn.textContent = 'Student View';
             studentBtn.className = 'btn btn-primary';
             studentBtn.onclick = () => showView('studentView');
             navButtons.appendChild(studentBtn);
-        }
-
-        if (role === 'admin' || role === 'recruiter') {
+        } else if (role === 'recruiter') {
             const recruiterBtn = document.createElement('button');
             recruiterBtn.textContent = 'Recruiter View';
             recruiterBtn.className = 'btn btn-primary';
             recruiterBtn.onclick = () => showView('recruiterView');
             navButtons.appendChild(recruiterBtn);
-        }
-
-        if (role === 'admin') {
+        } else if (role === 'admin') {
             const interviewBtn = document.createElement('button');
             interviewBtn.textContent = 'Interviews';
             interviewBtn.className = 'btn btn-primary';
@@ -47,75 +104,73 @@ document.addEventListener('DOMContentLoaded', () => {
             navButtons.appendChild(interviewBtn);
         }
 
-        // Show default view based on role
-        if (role === 'student') {
-            showView('studentView');
-        } else if (role === 'recruiter') {
-            showView('recruiterView');
-        } else if (role === 'admin') {
-            showView('studentView');
-        }
+        // Add Logout button
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = 'Logout';
+        logoutBtn.className = 'btn btn-danger';
+        logoutBtn.onclick = () => {
+            currentUser = null;
+            appliedJobs.clear();
+            showView('authSection');
+            navButtons.innerHTML = '';
+            showModal('Logged Out', 'You have been logged out.');
+        };
+        navButtons.appendChild(logoutBtn);
+
+        // Show view based on role
+        showView(role === 'student' ? 'studentView' : role === 'recruiter' ? 'recruiterView' : 'interviewView');
 
         // Load initial data
         loadInitialData();
     };
 
     function showView(viewId) {
-        const views = ['studentView', 'recruiterView', 'interviewView'];
+        const views = ['authSection', 'registerForm', 'loginForm', 'studentView', 'recruiterView', 'interviewView'];
         views.forEach(view => {
             document.getElementById(view).classList.add('hidden');
         });
         document.getElementById(viewId).classList.remove('hidden');
 
-        // Initialize calendar when showing interview view
         if (viewId === 'interviewView') {
             initCalendar();
         }
     }
 
     function loadInitialData() {
-        // Add four sample jobs to student view
+        // Student jobs
         const jobTableBody = document.getElementById('jobTableBody');
         jobTableBody.innerHTML = '';
-
         const sampleJobs = [
             ['201', 'Software Intern', 'TechCorp', 'Buea', '2025-06-10'],
             ['202', 'Data Analyst Intern', 'DataWorks', 'Douala', '2025-06-15'],
             ['203', 'UI/UX Designer', 'CreativeLabs', 'Yaoundé', '2025-06-20'],
             ['204', 'Marketing Coordinator', 'BrandBoost', 'Limbe', '2025-06-25']
         ];
-
         sampleJobs.forEach(job => addJobToStudentTable(job));
 
-        // Add four sample jobs to recruiter view
+        // Recruiter jobs
         const recruiterJobTableBody = document.getElementById('recruiterJobTableBody');
         recruiterJobTableBody.innerHTML = '';
-
         const recruiterSampleJobs = [
             ['201', 'Software Intern', 'TechCorp', 'Buea', '2025-06-10', jobDescriptions['201']],
             ['202', 'Data Analyst Intern', 'DataWorks', 'Douala', '2025-06-15', jobDescriptions['202']],
             ['203', 'UI/UX Designer', 'CreativeLabs', 'Yaoundé', '2025-06-20', jobDescriptions['203']],
             ['204', 'Marketing Coordinator', 'BrandBoost', 'Limbe', '2025-06-25', jobDescriptions['204']]
         ];
-
         recruiterSampleJobs.forEach(job => addJobToRecruiterTable(job));
+        document.getElementById('totalJobsCount').textContent = recruiterJobTableBody.childElementCount;
 
-        // Update job counter
-        document.getElementById('totalJobsCount').textContent = recruiterSampleJobs.length;
-
-        // Add sample interviews to admin view
+        // Interviews
         const interviewTableBody = document.getElementById('interviewTableBody');
         interviewTableBody.innerHTML = '';
-
-        addInterviewToTable(['INT001', 'Student A', '2025-06-01', '10:00 AM', 'Scheduled']);
-        addInterviewToTable(['INT002', 'Student B', '2025-06-02', '2:00 PM', 'Pending']);
+        addInterviewToTable(['INT001', 'Student A', '2025-06-01', '10:00', 'Scheduled']);
+        addInterviewToTable(['INT002', 'Student B', '2025-06-02', '14:00', 'Pending']);
     }
 
     function addJobToStudentTable(jobData) {
         const jobTableBody = document.getElementById('jobTableBody');
         const row = document.createElement('tr');
         row.className = 'table-row';
-
         jobData.forEach(cellData => {
             const cell = document.createElement('td');
             cell.className = 'table-cell';
@@ -123,39 +178,25 @@ document.addEventListener('DOMContentLoaded', () => {
             row.appendChild(cell);
         });
 
-        // Add click event to show job details
         row.addEventListener('click', () => {
             const jobId = jobData[0];
             const jobTitle = jobData[1];
 
-            // Highlight selected row
-            document.querySelectorAll('#jobTableBody tr').forEach(r => {
-                r.classList.remove('selected');
-            });
+            document.querySelectorAll('#jobTableBody tr').forEach(r => r.classList.remove('selected'));
             row.classList.add('selected');
 
-            // Display job details
             const jobDetailsArea = document.getElementById('jobDetailsArea');
             const desc = jobDescriptions[jobId] || 'No description available.';
-
             jobDetailsArea.innerHTML = `
                 <h3 class="subsection-title">${jobTitle}</h3>
                 <p>${desc}</p>
             `;
 
-            // Enable buttons if job is not already applied for
             const applyButton = document.getElementById('applyButton');
             const withdrawButton = document.getElementById('withdrawButton');
+            applyButton.disabled = appliedJobs.has(jobId);
+            withdrawButton.disabled = !appliedJobs.has(jobId);
 
-            applyButton.disabled = false;
-            withdrawButton.disabled = true;
-
-            if (appliedJobs.has(jobId)) {
-                applyButton.disabled = true;
-                withdrawButton.disabled = false;
-            }
-
-            // Set up button actions with the job ID
             applyButton.onclick = () => applyForJob(jobId, jobTitle);
             withdrawButton.onclick = () => withdrawFromJob(jobId, jobTitle);
         });
@@ -166,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function addJobToRecruiterTable(jobData) {
         const recruiterJobTableBody = document.getElementById('recruiterJobTableBody');
         const row = document.createElement('tr');
-
         jobData.forEach(cellData => {
             const cell = document.createElement('td');
             cell.className = 'table-cell';
@@ -174,90 +214,49 @@ document.addEventListener('DOMContentLoaded', () => {
             row.appendChild(cell);
         });
 
-        // Add actions column with Withdraw button
         const actionsCell = document.createElement('td');
         actionsCell.className = 'table-cell actions';
-
         const withdrawButton = document.createElement('button');
         withdrawButton.className = 'btn btn-danger btn-small';
         withdrawButton.textContent = 'Withdraw';
         withdrawButton.onclick = () => withdrawJob(jobData[0], jobData[1], row);
         actionsCell.appendChild(withdrawButton);
-
         row.appendChild(actionsCell);
-        recruiterJobTableBody.appendChild(row);
 
-        // Update job counter
-        document.getElementById('totalJobsCount').textContent = 
-            document.getElementById('recruiterJobTableBody').childElementCount;
+        recruiterJobTableBody.appendChild(row);
+        document.getElementById('totalJobsCount').textContent = recruiterJobTableBody.childElementCount;
     }
 
     function withdrawJob(jobId, jobTitle, row) {
-        showModal('Confirm Withdrawal', `Are you sure you want to withdraw the job "${jobTitle}"?`, [
+        showModal('Confirm Withdrawal', `Are you sure you want to withdraw "${jobTitle}"?`, [
+            { text: 'Cancel', class: 'btn btn-primary', action: () => document.getElementById('modal').classList.add('hidden') },
             {
-                text: 'Cancel',
-                class: 'btn btn-primary',
-                action: () => document.getElementById('modal').classList.add('hidden')
-            },
-            {
-                text: 'Withdraw',
-                class: 'btn btn-danger',
-                action: () => {
-                    // Remove from recruiter table
+                text: 'Withdraw', class: 'btn btn-danger', action: () => {
                     row.remove();
-
-                    // Remove from student table
                     const jobTableBody = document.getElementById('jobTableBody');
-                    Array.from(jobTableBody.children).forEach(jobRow => {
-                        if (jobRow.children[0].textContent === jobId) {
-                            jobRow.remove();
-                        }
+                    Array.from(jobTableBody.children).forEach(r => {
+                        if (r.children[0].textContent === jobId) r.remove();
                     });
-
-                    // Remove from jobDescriptions
                     delete jobDescriptions[jobId];
-
-                    // Update job counter
-                    document.getElementById('totalJobsCount').textContent = 
-                        document.getElementById('recruiterJobTableBody').childElementCount;
-
-                    // Clear job details if selected
+                    document.getElementById('totalJobsCount').textContent = document.getElementById('recruiterJobTableBody').childElementCount;
                     const jobDetailsArea = document.getElementById('jobDetailsArea');
                     if (jobDetailsArea.querySelector('.subsection-title')?.textContent === jobTitle) {
                         jobDetailsArea.innerHTML = '<p class="text-muted">Select a job to view details</p>';
                         document.getElementById('applyButton').disabled = true;
                         document.getElementById('withdrawButton').disabled = true;
                     }
-
-                    // Close modal and show success
                     document.getElementById('modal').classList.add('hidden');
-                    showModal('Job Withdrawn', `The job "${jobTitle}" has been withdrawn.`);
+                    showModal('Job Withdrawn', `"${jobTitle}" has been withdrawn.`);
                 }
             }
         ]);
     }
 
-    function refreshStudentJobTable() {
-        const jobTableBody = document.getElementById('jobTableBody');
-        jobTableBody.innerHTML = '';
-        Object.keys(jobDescriptions).forEach(jobId => {
-            const job = [
-                jobId,
-                document.querySelector(`#recruiterJobTableBody tr td:first-child[textContent="${jobId}"]`)?.parentElement.children[1].textContent,
-                document.querySelector(`#recruiterJobTableBody tr td:first-child[textContent="${jobId}"]`)?.parentElement.children[2].textContent,
-                document.querySelector(`#recruiterJobTableBody tr td:first-child[textContent="${jobId}"]`)?.parentElement.children[3].textContent,
-                document.querySelector(`#recruiterJobTableBody tr td:first-child[textContent="${jobId}"]`)?.parentElement.children[4].textContent
-            ];
-            if (job[1]) addJobToStudentTable(job);
-        });
-    }
-
-    // Calendar functionality
+    // Calendar functions
     let currentDate = new Date();
     let currentMonth = currentDate.getMonth();
     let currentYear = currentDate.getFullYear();
 
-    // Format date as YYYY-MM-DD
     function formatDate(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -265,13 +264,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${year}-${month}-${day}`;
     }
 
-    // Parse date from YYYY-MM-DD
     function parseDate(dateStr) {
         const [year, month, day] = dateStr.split('-');
         return new Date(year, month - 1, day);
     }
 
-    // Initialize calendar
     function initCalendar() {
         const prevMonthBtn = document.getElementById('prevMonth');
         const nextMonthBtn = document.getElementById('nextMonth');
@@ -298,61 +295,41 @@ document.addEventListener('DOMContentLoaded', () => {
         updateUpcomingInterviews();
     }
 
-    // Render calendar for current month/year
     function renderCalendar() {
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-        // Set current month/year display
         document.getElementById('currentMonthYear').textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
         const calendarDays = document.getElementById('calendarDays');
         calendarDays.innerHTML = '';
 
-        // Get first day of month
         const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-
-        // Get last day of month
         const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-        // Add empty days for start of month
         for (let i = 0; i < firstDay; i++) {
             const emptyDay = document.createElement('div');
             emptyDay.className = 'calendar-day';
             calendarDays.appendChild(emptyDay);
         }
 
-        // Get today's date for highlighting
         const today = new Date();
         const todayFormatted = formatDate(today);
 
-        // Add days of month
         for (let day = 1; day <= lastDate; day++) {
             const dayElem = document.createElement('div');
             const date = new Date(currentYear, currentMonth, day);
             const dateFormatted = formatDate(date);
 
-            // Check if this date has interviews
             const hasInterviews = interviewsByDate[dateFormatted] && interviewsByDate[dateFormatted].length > 0;
 
-            // Style based on interviews and if it's today
             let className = 'calendar-day';
-
-            if (dateFormatted === todayFormatted) {
-                className += ' today';
-            }
-
-            if (hasInterviews) {
-                className += ' scheduled';
-            }
+            if (dateFormatted === todayFormatted) className += ' today';
+            if (hasInterviews) className += ' scheduled';
 
             dayElem.className = className;
             dayElem.textContent = day;
 
-            // Add click event for days with interviews
             if (hasInterviews) {
-                dayElem.addEventListener('click', () => {
-                    showInterviewsForDate(dateFormatted);
-                });
+                dayElem.addEventListener('click', () => showInterviewsForDate(dateFormatted));
             }
 
             calendarDays.appendChild(dayElem);
@@ -360,34 +337,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showInterviewsForDate(dateStr) {
-        if (interviewsByDate[dateStr] && interviewsByDate[dateStr].length > 0) {
+        if (interviewsByDate[dateStr]?.length > 0) {
             const interviews = interviewsByDate[dateStr];
-            let message = `Interviews on ${dateStr}:\n`;
-
-            interviews.forEach(interview => {
-                message += `\n- ${interview.candidate} at ${interview.time} (${interview.status})`;
-            });
-
+            let message = `Interviews on ${dateStr}:\n` + interviews.map(i => `- ${i.candidate} at ${i.time} (${i.status})`).join('\n');
             showModal('Interviews', message);
         }
     }
 
-    // Update upcoming interviews list
     function updateUpcomingInterviews() {
         const upcomingList = document.getElementById('upcomingInterviews');
         upcomingList.innerHTML = '';
 
-        // Get today's date
         const today = new Date();
-
-        // Get and sort all interview dates
-        const allDates = Object.keys(interviewsByDate).sort();
-
-        // Filter for upcoming dates
-        const upcomingDates = allDates.filter(dateStr => {
-            const interviewDate = parseDate(dateStr);
-            return interviewDate >= today;
-        }).slice(0, 5); // Show next 5 dates
+        const upcomingDates = Object.keys(interviewsByDate)
+            .filter(dateStr => parseDate(dateStr) >= today)
+            .sort()
+            .slice(0, 5);
 
         if (upcomingDates.length === 0) {
             const noInterviews = document.createElement('li');
@@ -397,20 +362,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Add each upcoming interview
         upcomingDates.forEach(dateStr => {
-            const interviews = interviewsByDate[dateStr];
-
-            interviews.forEach(interview => {
+            interviewsByDate[dateStr].forEach(interview => {
                 const listItem = document.createElement('li');
-                listItem.className = '';
-
                 const dateDiv = document.createElement('div');
                 dateDiv.textContent = dateStr;
-
                 const infoDiv = document.createElement('div');
                 infoDiv.textContent = `${interview.time} - ${interview.candidate}`;
-
                 listItem.appendChild(dateDiv);
                 listItem.appendChild(infoDiv);
                 upcomingList.appendChild(listItem);
@@ -421,7 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function addInterviewToTable(interviewData) {
         const interviewTableBody = document.getElementById('interviewTableBody');
         const row = document.createElement('tr');
-
         interviewData.forEach(cellData => {
             const cell = document.createElement('td');
             cell.className = 'table-cell';
@@ -429,7 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
             row.appendChild(cell);
         });
 
-        // Add actions column
         const actionsCell = document.createElement('td');
         actionsCell.className = 'table-cell actions';
 
@@ -443,15 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteButton.textContent = 'Cancel';
         deleteButton.onclick = () => {
             showModal('Confirm Cancellation', 'Are you sure you want to cancel this interview?', [
+                { text: 'No', class: 'btn btn-primary', action: () => document.getElementById('modal').classList.add('hidden') },
                 {
-                    text: 'No',
-                    class: 'btn btn-primary',
-                    action: () => document.getElementById('modal').classList.add('hidden')
-                },
-                {
-                    text: 'Yes',
-                    class: 'btn btn-danger',
-                    action: () => {
+                    text: 'Yes', class: 'btn btn-danger', action: () => {
                         row.remove();
                         document.getElementById('modal').classList.add('hidden');
                         showModal('Interview Cancelled', 'The interview has been cancelled.');
@@ -463,30 +413,18 @@ document.addEventListener('DOMContentLoaded', () => {
         actionsCell.appendChild(editButton);
         actionsCell.appendChild(deleteButton);
         row.appendChild(actionsCell);
-
         interviewTableBody.appendChild(row);
 
-        // Add to calendar data if date is valid
         const id = interviewData[0];
         const candidate = interviewData[1];
         const date = interviewData[2];
         const time = interviewData[3];
         const status = interviewData[4];
 
-        // Only add if it has a valid date format
         if (date && date.match(/\d{4}-\d{2}-\d{2}/)) {
-            if (!interviewsByDate[date]) {
-                interviewsByDate[date] = [];
-            }
+            if (!interviewsByDate[date]) interviewsByDate[date] = [];
+            interviewsByDate[date].push({ id, candidate, time, status });
 
-            interviewsByDate[date].push({
-                id,
-                candidate,
-                time,
-                status
-            });
-
-            // Update calendar if we're in interview view
             if (!document.getElementById('interviewView').classList.contains('hidden')) {
                 renderCalendar();
                 updateUpcomingInterviews();
@@ -498,15 +436,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!appliedJobs.has(jobId)) {
             appliedJobs.add(jobId);
 
-            // Update application status
             const applicationsList = document.getElementById('applicationsList');
             const listItem = document.createElement('li');
             listItem.textContent = jobTitle;
             applicationsList.appendChild(listItem);
 
             document.getElementById('applicationStatus').classList.remove('hidden');
-
-            // Update buttons
             document.getElementById('applyButton').disabled = true;
             document.getElementById('withdrawButton').disabled = false;
 
@@ -518,19 +453,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (appliedJobs.has(jobId)) {
             appliedJobs.delete(jobId);
 
-            // Update application status
             const applicationsList = document.getElementById('applicationsList');
             Array.from(applicationsList.children).forEach(item => {
-                if (item.textContent === jobTitle) {
-                    item.remove();
-                }
+                if (item.textContent === jobTitle) item.remove();
             });
 
             if (applicationsList.children.length === 0) {
                 document.getElementById('applicationStatus').classList.add('hidden');
             }
 
-            // Update buttons
             document.getElementById('applyButton').disabled = false;
             document.getElementById('withdrawButton').disabled = true;
 
@@ -556,19 +487,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         modal.classList.remove('hidden');
-
-        // Auto-close after 5 seconds if only one button
         if (buttons.length === 1) {
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 5000);
+            setTimeout(() => modal.classList.add('hidden'), 5000);
         }
     }
 
     // Event listeners for forms
+    document.getElementById('registerFormElement').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value.trim();
+        const secretId = document.getElementById('regSecretId').value.trim();
+        const role = document.getElementById('regRole').value;
+
+        if (registerUser(username, password, secretId, role)) {
+            showModal('Registration Successful', `Account created for ${username}. Please login.`, [
+                {
+                    text: 'OK',
+                    class: 'btn btn-primary',
+                    action: () => {
+                        document.getElementById('modal').classList.add('hidden');
+                        document.getElementById('registerFormElement').reset();
+                        showLoginForm();
+                    }
+                }
+            ]);
+        }
+    });
+
+    document.getElementById('loginFormElement').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const secretId = document.getElementById('loginSecretId').value.trim();
+
+        if (loginUser(username, password, secretId)) {
+            document.getElementById('loginFormElement').reset();
+            selectRole(currentUser.role);
+        }
+    });
+
     document.getElementById('jobPostForm').addEventListener('submit', function(e) {
         e.preventDefault();
-
         const title = document.getElementById('titleField').value.trim();
         const company = document.getElementById('companyField').value.trim();
         const location = document.getElementById('locationField').value.trim();
@@ -582,26 +542,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const id = String(jobIdCounter++);
         const jobData = [id, title, company, location, deadline, description];
-
-        // Add to recruiter table
         addJobToRecruiterTable(jobData);
-
-        // Add to student table (automatically approved)
         const studentJobData = [id, title, company, location, deadline];
         addJobToStudentTable(studentJobData);
-
-        // Store job description
         jobDescriptions[id] = description;
 
-        // Clear form
         document.getElementById('jobPostForm').reset();
-
-        showModal('Job Posted', 'Job Posted Successfully!');
+        showModal('Job Posted', 'Job Posted Successfully');
     });
 
     document.getElementById('scheduleInterviewForm')?.addEventListener('submit', function(e) {
         e.preventDefault();
-
         const candidate = document.getElementById('candidateField').value.trim();
         const date = document.getElementById('interviewDateField').value.trim();
         const time = document.getElementById('interviewTimeField').value.trim();
@@ -612,14 +563,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const id = 'INT00' + interviewIdCounter;
+        const id = 'INT00' + interviewIdCounter++;
         const interviewData = [id, candidate, date, time, status];
-
         addInterviewToTable(interviewData);
 
-        // Clear form
         document.getElementById('scheduleInterviewForm').reset();
-
         showModal('Interview Scheduled', 'Interview Scheduled Successfully!');
     });
 });
