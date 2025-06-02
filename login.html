@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h2 {
+            color: #1e90ff;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #1e90ff;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Login</h2>
+    <form onsubmit="handleLogin(event)">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+        <label for="field">Field:</label>
+        <input type="text" id="field" placeholder="Student, Officer, Trainer, Recruiter" required>
+        <input type="submit" value="Login">
+    </form>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const field = document.getElementById('field').value.toLowerCase();
+
+            let redirectUrl;
+
+            switch (field) {
+                case 'student':
+                    redirectUrl = 'student_home.html';
+                    break;
+                case 'officer':
+                    redirectUrl = 'placement_officer_home.html';
+                    break;
+                case 'trainer':
+                    redirectUrl = 'trainer_home.html';
+                    break;
+                case 'recruiter':
+                    redirectUrl = 'recruiter_home.html';
+                    break;
+                default:
+                    alert('Invalid field. Please enter Student, Officer, Trainer, or Recruiter.');
+                    return;
+            }
+
+            // Redirect to the appropriate home page
+            window.location.href = redirectUrl;
+        }
+    </script>
+</body>
+</html>

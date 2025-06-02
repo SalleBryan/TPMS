@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainer Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+        }
+        header {
+            background-color: #1e90ff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #87cefa;
+        }
+        .profile {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            border: 2px solid #1e90ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #1e90ff;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: 20px auto;
+        }
+        input {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #1e90ff;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome, Trainer!</h1>
+</header>
+
+<nav>
+    <div class="profile" onclick="toggleProfileForm()">
+        <span id="profileInitials">Photo</span>
+    </div>
+    <div>
+        <button onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div class="content">
+    <h2>Your Profile</h2>
+    <div id="profileForm" class="hidden">
+        <h3>Edit Profile</h3>
+        <form onsubmit="updateProfile(event)">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+            <label for="specialization">Specialization:</label>
+            <input type="text" id="specialization" required>
+            <label for="assigned_training">Assigned Training:</label>
+            <input type="text" id="assigned_training" required>
+            <input type="submit" value="Update Profile">
+        </form>
+    </div>
+    <p>Your training content goes here.</p>
+</div>
+
+<footer>
+    <p>&copy; 2025 Training and Placement Management System</p>
+</footer>
+
+<script>
+    function toggleProfileForm() {
+        const form = document.getElementById('profileForm');
+        form.classList.toggle('hidden');
+    }
+
+    function updateProfile(event) {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const profileInitials = name.charAt(0).toUpperCase();
+
+        document.getElementById('profileInitials').innerText = profileInitials;
+        alert('Profile updated!');
+        toggleProfileForm();
+    }
+
+    function logout() {
+        alert('Logging out...');
+        // Redirect to login page or home page
+    }
+</script>
+
+</body>
+</html>
