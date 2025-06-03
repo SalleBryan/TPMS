@@ -31,4 +31,5 @@ public class ProfileController {
         Student updated = studentService.updateStudent(StudentMapper.toModel(dto));
         return ResponseEntity.ok(StudentMapper.toDto(updated));
     }
+    
 }

@@ -1,230 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TPMS - Training & Professional Management System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPMS - Training & Placement Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-brand">
-        <h1 class="logo">TPMS</h1>
-      </div>
-      <div class="nav-menu">
-        <a href="#features" class="nav-link">Features</a>
-        <a href="#about" class="nav-link">About</a>
-        <a href="#contact" class="nav-link">Contact</a>
-        <div class="nav-buttons">
-          <a href="login.html" class="btn-secondary">Login</a>
-          <a href="signup.html" class="btn-primary">Get Started</a>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>TPMS</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="login.html" class="nav-link login-btn">Login</a>
+                <a href="signup.html" class="nav-link signup-btn">Sign Up</a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
-      </div>
-      <div class="mobile-menu-toggle">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  </nav>
+    </nav>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-container">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <i class="fas fa-sparkles"></i>
-          <span>Training Management Made Simple</span>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Empower Your Career Journey with 
+                    <span class="highlight">Smart Training & Placement</span>
+                </h1>
+                <p class="hero-description">
+                    Connect students, trainers, and recruiters in one comprehensive platform. 
+                    Streamline training programs, manage job placements, and accelerate career growth 
+                    with our intelligent management system.
+                </p>
+                <div class="hero-buttons">
+                    <a href="signup.html" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        Get Started Today
+                    </a>
+                    <a href="#features" class="btn btn-secondary">
+                        <i class="fas fa-play"></i>
+                        Learn More
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">1000+</span>
+                        <span class="stat-label">Students Placed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Training Programs</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">200+</span>
+                        <span class="stat-label">Partner Companies</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-graphic">
+                    <i class="fas fa-users"></i>
+                    <i class="fas fa-briefcase"></i>
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
         </div>
-        <h1 class="hero-title">
-          Streamline Your 
-          <span class="gradient-text">Professional Training</span>
-          Management
-        </h1>
-        <p class="hero-description">
-          Comprehensive training and professional management system designed to optimize your workforce development, track progress, and manage career growth efficiently.
-        </p>
-        <div class="hero-buttons">
-          <a href="signup.html" class="btn-primary btn-large">
-            <span>Start Free Trial</span>
-            <i class="fas fa-arrow-right"></i>
-          </a>
-          <a href="#demo" class="btn-outline btn-large">
-            <i class="fas fa-play"></i>
-            <span>Watch Demo</span>
-          </a>
-        </div>
-        <div class="hero-stats">
-          <div class="stat">
-            <div class="stat-number">10K+</div>
-            <div class="stat-label">Active Users</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number">500+</div>
-            <div class="stat-label">Companies</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number">98%</div>
-            <div class="stat-label">Satisfaction</div>
-          </div>
-        </div>
-      </div>
-      <div class="hero-visual">
-        <div class="hero-card main-card">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fas fa-chart-line"></i>
-            </div>
-            <div class="card-title">Training Analytics</div>
-          </div>
-          <div class="card-content">
-            <div class="progress-item">
-              <span>Leadership Training</span>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 85%"></div>
-              </div>
-              <span>85%</span>
-            </div>
-            <div class="progress-item">
-              <span>Technical Skills</span>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 72%"></div>
-              </div>
-              <span>72%</span>
-            </div>
-          </div>
-        </div>
-        <div class="hero-card floating-card-1">
-          <div class="notification-card">
-            <div class="notification-icon">
-              <i class="fas fa-bell"></i>
-            </div>
-            <div class="notification-content">
-              <div class="notification-title">New Training Available</div>
-              <div class="notification-text">Advanced Data Analysis</div>
-            </div>
-          </div>
-        </div>
-        <div class="hero-card floating-card-2">
-          <div class="user-card">
-            <div class="user-avatar">JD</div>
-            <div class="user-info">
-              <div class="user-name">John Doe</div>
-              <div class="user-roles">Senior Developer</div>
-            </div>
-            <div class="completion-badge">
-              <i class="fas fa-check"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Features Section -->
-  <section id="features" class="features">
-    <div class="section-container">
-      <div class="section-header">
-        <h2 class="section-title">Powerful Features for Modern Training</h2>
-        <p class="section-description">Everything you need to manage, track, and optimize your professional development programs</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-graduation-cap"></i>
-          </div>
-          <h3>Smart Learning Paths</h3>
-          <p>AI-powered personalized learning recommendations based on roles, skills, and career goals.</p>
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Comprehensive Training & Placement Solutions</h2>
+                <p>Everything you need to manage training programs and career placements in one platform</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3>Student Management</h3>
+                    <p>Track student progress, manage profiles, and monitor academic performance with comprehensive analytics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Training Programs</h3>
+                    <p>Create, schedule, and manage training sessions with expert trainers and industry-relevant curriculum.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Job Placement</h3>
+                    <p>Connect with top recruiters, manage job applications, and schedule interviews seamlessly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Analytics & Reports</h3>
+                    <p>Get insights into placement rates, training effectiveness, and student performance metrics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Interview Scheduling</h3>
+                    <p>Automated interview scheduling with calendar integration and notification systems.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Smart Search</h3>
+                    <p>Advanced search and filtering capabilities to find the right candidates and opportunities.</p>
+                </div>
+            </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-analytics"></i>
-          </div>
-          <h3>Advanced Analytics</h3>
-          <p>Comprehensive insights into training effectiveness, progress tracking, and ROI measurement.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <h3>Team Management</h3>
-          <p>Efficiently organize teams, assign training programs, and monitor collective progress.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-certificate"></i>
-          </div>
-          <h3>Certification Tracking</h3>
-          <p>Automatic tracking of certifications, renewals, and compliance requirements.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-mobile-alt"></i>
-          </div>
-          <h3>Mobile Learning</h3>
-          <p>Learn anywhere, anytime with our responsive mobile platform and offline capabilities.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <h3>Secure & Compliant</h3>
-          <p>Enterprise-grade security with GDPR compliance and SOC 2 Type II certification.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CTA Section -->
-  <section class="cta">
-    <div class="cta-container">
-      <div class="cta-content">
-        <h2>Ready to Transform Your Training?</h2>
-        <p>Join thousands of companies using TPMS to develop their workforce</p>
-        <a href="signup.html" class="btn-primary btn-large">Get Started Today</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-content">
-        <div class="footer-brand">
-          <h3 class="logo">TPMS</h3>
-          <p>Transforming professional development through intelligent training management.</p>
+    <!-- User Roles Section -->
+    <section class="user-roles">
+        <div class="container">
+            <div class="section-header">
+                <h2>Designed for Every User</h2>
+                <p>Tailored experiences for students, trainers, recruiters, and administrators</p>
+            </div>
+            <div class="roles-grid">
+                <div class="role-card">
+                    <div class="role-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3>Students</h3>
+                    <ul>
+                        <li>Browse training programs</li>
+                        <li>Apply for jobs</li>
+                        <li>Track application status</li>
+                        <li>Schedule interviews</li>
+                        <li>View progress analytics</li>
+                    </ul>
+                    <a href="signup.html?role=student" class="btn btn-outline">Join as Student</a>
+                </div>
+                <div class="role-card">
+                    <div class="role-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Trainers</h3>
+                    <ul>
+                        <li>Create training programs</li>
+                        <li>Manage student enrollments</li>
+                        <li>Track training progress</li>
+                        <li>Generate reports</li>
+                        <li>Schedule sessions</li>
+                    </ul>
+                    <a href="signup.html?role=trainer" class="btn btn-outline">Join as Trainer</a>
+                </div>
+                <div class="role-card">
+                    <div class="role-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3>Recruiters</h3>
+                    <ul>
+                        <li>Post job opportunities</li>
+                        <li>Search qualified candidates</li>
+                        <li>Schedule interviews</li>
+                        <li>Manage applications</li>
+                        <li>Access talent pool</li>
+                    </ul>
+                    <a href="signup.html?role=recruiter" class="btn btn-outline">Join as Recruiter</a>
+                </div>
+            </div>
         </div>
-        <div class="footer-links">
-          <div class="link-group">
-            <h4>Product</h4>
-            <a href="#features">Features</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#integrations">Integrations</a>
-          </div>
-          <div class="link-group">
-            <h4>Company</h4>
-            <a href="#about">About</a>
-            <a href="#careers">Careers</a>
-            <a href="#contact">Contact</a>
-          </div>
-          <div class="link-group">
-            <h4>Support</h4>
-            <a href="#help">Help Center</a>
-            <a href="#docs">Documentation</a>
-            <a href="#status">Status</a>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2024 TPMS. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
+    </section>
 
-  <script src="js/main.js"></script>
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Career Journey?</h2>
+                <p>Join thousands of students, trainers, and recruiters who trust TPMS for their career development needs.</p>
+                <div class="cta-buttons">
+                    <a href="signup.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-user-plus"></i>
+                        Create Free Account
+                    </a>
+                    <a href="login.html" class="btn btn-secondary btn-large">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>TPMS</span>
+                    </div>
+                    <p>Empowering careers through intelligent training and placement management.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="login.html">Dashboard</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>For Users</h4>
+                    <ul>
+                        <li><a href="signup.html">Student Registration</a></li>
+                        <li><a href="signup.html">Trainer Portal</a></li>
+                        <li><a href="signup.html">Recruiter Access</a></li>
+                        <li><a href="login.html">Admin Panel</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Training & Placement Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/landing.js"></script>
 </body>
 </html>

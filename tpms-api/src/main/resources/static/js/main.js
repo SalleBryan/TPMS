@@ -1,249 +1,366 @@
-class LandingPage {
-  constructor() {
-    this.navbar = document.getElementById("navbar")
-    this.mobileMenuBtn = document.getElementById("mobileMenuBtn")
-    this.navLinks = document.getElementById("navLinks")
-    this.loading = document.getElementById("loading")
+// Main JavaScript file for common functionality
 
-    this.init()
-  }
+// Global variables
+let currentUser = null
+let authToken = null
 
-  init() {
-    this.setupEventListeners()
-    this.setupAnimations()
-    this.hideLoading()
-  }
+// Initialize the application
+document.addEventListener("DOMContentLoaded", () => {
+  initializeApp()
+})
 
-  setupEventListeners() {
-    // Navbar scroll effect
-    window.addEventListener("scroll", this.handleScroll.bind(this))
+function initializeApp() {
+  // Check for stored authentication
+  checkAuthStatus()
 
-    // Mobile menu toggle
-    this.mobileMenuBtn.addEventListener("click", this.toggleMobileMenu.bind(this))
+  // Initialize common event listeners
+  initializeEventListeners()
 
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", this.handleSmoothScroll.bind(this))
-    })
+  // Initialize tooltips and other UI components
+  initializeUIComponents()
+}
 
-    // Close mobile menu when clicking on links
-    this.navLinks.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        this.navLinks.classList.remove("active")
-        this.mobileMenuBtn.classList.remove("active")
-      })
-    })
+function checkAuthStatus() {
+  const token = localStorage.getItem("authToken")
+  const user = localStorage.getItem("currentUser")
 
-    // Handle roles-specific signup links
-    document.querySelectorAll('a[href*="signup.html"]').forEach((link) => {
-      link.addEventListener("click", this.handleSignupLink.bind(this))
-    })
-  }
+  if (token && user) {
+    authToken = token
+    currentUser = JSON.parse(user)
 
-  handleScroll() {
-    if (window.scrollY > 50) {
-      this.navbar.classList.add("scrolled")
-    } else {
-      this.navbar.classList.remove("scrolled")
-    }
-  }
-
-  toggleMobileMenu() {
-    this.navLinks.classList.toggle("active")
-    this.mobileMenuBtn.classList.toggle("active")
-  }
-
-  handleSmoothScroll(e) {
-    e.preventDefault()
-    const target = document.querySelector(e.currentTarget.getAttribute("href"))
-    if (target) {
-      const offsetTop = target.offsetTop - 80 // Account for fixed navbar
-      window.scrollTo({
-        top: offsetTop,
-        behavior: "smooth",
-      })
-    }
-  }
-
-  handleSignupLink(e) {
-    const href = e.currentTarget.getAttribute("href")
-    const url = new URL(href, window.location.origin)
-
-    // If there's a roles parameter in the URL, store it for the signup page
-    const roles = url.searchParams.get("roles")
-    if (roles) {
-      sessionStorage.setItem("selectedRole", roles)
-    }
-  }
-
-  setupAnimations() {
-    // Intersection Observer for fade-in animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: "0px 0px -50px 0px",
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible")
-        }
-      })
-    }, observerOptions)
-
-    // Observe all fade-in elements
-    document.querySelectorAll(".fade-in").forEach((el) => {
-      observer.observe(el)
-    })
-
-    // Stagger animation for cards
-    this.addStaggerAnimation(".hero-card", 200)
-    this.addStaggerAnimation(".step-item", 300)
-    this.addStaggerAnimation(".roles-card", 200)
-    this.addStaggerAnimation(".feature-item", 150)
-  }
-
-  addStaggerAnimation(selector, delay = 200) {
-    const elements = document.querySelectorAll(selector)
-    elements.forEach((element, index) => {
-      element.style.animationDelay = `${index * delay}ms`
-      element.classList.add("fade-in")
-    })
-  }
-
-  hideLoading() {
-    setTimeout(() => {
-      this.loading.classList.add("hidden")
-    }, 1000)
-  }
-
-  // API Methods for future use
-  async checkServerStatus() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/`)
-      return response.ok
-    } catch (error) {
-      console.error("Server connection failed:", error)
-      return false
-    }
-  }
-
-  // Utility method to show notifications
-  showNotification(message, type = "info") {
-    const notification = document.createElement("div")
-    notification.className = `notification notification-${type}`
-    notification.textContent = message
-
-    // Add styles
-    Object.assign(notification.style, {
-      position: "fixed",
-      top: "20px",
-      right: "20px",
-      padding: "1rem 1.5rem",
-      borderRadius: "0.5rem",
-      color: "white",
-      fontWeight: "600",
-      zIndex: "10000",
-      transform: "translateX(100%)",
-      transition: "transform 0.3s ease-in-out",
-    })
-
-    // Set background color based on type
-    const colors = {
-      success: "#10b981",
-      error: "#ef4444",
-      warning: "#f59e0b",
-      info: "#3b82f6",
-    }
-    notification.style.backgroundColor = colors[type] || colors.info
-
-    document.body.appendChild(notification)
-
-    // Animate in
-    setTimeout(() => {
-      notification.style.transform = "translateX(0)"
-    }, 100)
-
-    // Remove after 5 seconds
-    setTimeout(() => {
-      notification.style.transform = "translateX(100%)"
-      setTimeout(() => {
-        document.body.removeChild(notification)
-      }, 300)
-    }, 5000)
+    // Verify token is still valid
+    verifyToken()
   }
 }
 
-// Initialize the landing page when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  new LandingPage()
-})
-
-// Add some interactive effects
-document.addEventListener("DOMContentLoaded", () => {
-  // Parallax effect for hero shapes
-  window.addEventListener("scroll", () => {
-    const scrolled = window.pageYOffset
-    const shapes = document.querySelectorAll(".hero-shape")
-
-    shapes.forEach((shape, index) => {
-      const speed = 0.5 + index * 0.1
-      shape.style.transform = `translateY(${scrolled * speed}px)`
-    })
-  })
-
-  // Add hover effects to cards
-  document.querySelectorAll(".hero-card, .step-item, .roles-card").forEach((card) => {
-    card.addEventListener("mouseenter", function () {
-      this.style.transform = "translateY(-10px) scale(1.02)"
+async function verifyToken() {
+  try {
+    const response = await fetch("/api/auth/verify", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
     })
 
-    card.addEventListener("mouseleave", function () {
-      this.style.transform = "translateY(0) scale(1)"
+    if (!response.ok) {
+      // Token is invalid, clear auth data
+      clearAuthData()
+      redirectToLogin()
+    }
+  } catch (error) {
+    console.error("Token verification failed:", error)
+    clearAuthData()
+    redirectToLogin()
+  }
+}
+
+function initializeEventListeners() {
+  // Mobile menu toggle
+  const hamburger = document.querySelector(".hamburger")
+  const navMenu = document.querySelector(".nav-menu")
+
+  if (hamburger && navMenu) {
+    hamburger.addEventListener("click", () => {
+      navMenu.classList.toggle("active")
+      hamburger.classList.toggle("active")
     })
-  })
+  }
 
-  // Add click ripple effect to buttons
-  document.querySelectorAll(".btn-primary, .btn-secondary, .roles-cta").forEach((btn) => {
-    btn.addEventListener("click", function (e) {
-      const ripple = document.createElement("span")
-      const rect = this.getBoundingClientRect()
-      const size = Math.max(rect.width, rect.height)
-      const x = e.clientX - rect.left - size / 2
-      const y = e.clientY - rect.top - size / 2
-
-      ripple.style.cssText = `
-        position: absolute;
-        width: ${size}px;
-        height: ${size}px;
-        left: ${x}px;
-        top: ${y}px;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        transform: scale(0);
-        animation: ripple 0.6s linear;
-        pointer-events: none;
-      `
-
-      this.style.position = "relative"
-      this.style.overflow = "hidden"
-      this.appendChild(ripple)
-
-      setTimeout(() => {
-        ripple.remove()
-      }, 600)
-    })
-  })
-
-  // Add CSS for ripple animation
-  const style = document.createElement("style")
-  style.textContent = `
-    @keyframes ripple {
-      to {
-        transform: scale(4);
-        opacity: 0;
+  // Close mobile menu when clicking outside
+  document.addEventListener("click", (event) => {
+    if (navMenu && navMenu.classList.contains("active")) {
+      if (!navMenu.contains(event.target) && !hamburger.contains(event.target)) {
+        navMenu.classList.remove("active")
+        hamburger.classList.remove("active")
       }
     }
-  `
-  document.head.appendChild(style)
-})
+  })
+
+  // Smooth scrolling for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault()
+      const target = document.querySelector(this.getAttribute("href"))
+      if (target) {
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        })
+      }
+    })
+  })
+}
+
+function initializeUIComponents() {
+  // Initialize any tooltips, modals, or other UI components
+  initializeTooltips()
+  initializeModals()
+}
+
+function initializeTooltips() {
+  // Add tooltip functionality if needed
+  const tooltipElements = document.querySelectorAll("[data-tooltip]")
+  tooltipElements.forEach((element) => {
+    element.addEventListener("mouseenter", showTooltip)
+    element.addEventListener("mouseleave", hideTooltip)
+  })
+}
+
+function showTooltip(event) {
+  const text = event.target.getAttribute("data-tooltip")
+  const tooltip = document.createElement("div")
+  tooltip.className = "tooltip"
+  tooltip.textContent = text
+  document.body.appendChild(tooltip)
+
+  const rect = event.target.getBoundingClientRect()
+  tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + "px"
+  tooltip.style.top = rect.top - tooltip.offsetHeight - 10 + "px"
+}
+
+function hideTooltip() {
+  const tooltip = document.querySelector(".tooltip")
+  if (tooltip) {
+    tooltip.remove()
+  }
+}
+
+function initializeModals() {
+  // Modal functionality
+  const modals = document.querySelectorAll(".modal")
+  const modalTriggers = document.querySelectorAll("[data-modal]")
+  const modalCloses = document.querySelectorAll(".modal-close, [data-modal-close]")
+
+  modalTriggers.forEach((trigger) => {
+    trigger.addEventListener("click", function () {
+      const modalId = this.getAttribute("data-modal")
+      const modal = document.getElementById(modalId)
+      if (modal) {
+        showModal(modal)
+      }
+    })
+  })
+
+  modalCloses.forEach((close) => {
+    close.addEventListener("click", function () {
+      const modal = this.closest(".modal")
+      if (modal) {
+        hideModal(modal)
+      }
+    })
+  })
+
+  // Close modal when clicking outside
+  modals.forEach((modal) => {
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        hideModal(modal)
+      }
+    })
+  })
+}
+
+function showModal(modal) {
+  modal.classList.add("show")
+  document.body.style.overflow = "hidden"
+}
+
+function hideModal(modal) {
+  modal.classList.remove("show")
+  document.body.style.overflow = ""
+}
+
+// Utility functions
+function showNotification(message, type = "info", duration = 5000) {
+  const notification = document.createElement("div")
+  notification.className = `notification notification-${type}`
+  notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `
+
+  const container = getNotificationContainer()
+  container.appendChild(notification)
+
+  // Auto remove after duration
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.remove()
+    }
+  }, duration)
+
+  // Animate in
+  setTimeout(() => {
+    notification.classList.add("show")
+  }, 100)
+}
+
+function getNotificationIcon(type) {
+  const icons = {
+    success: "check-circle",
+    error: "exclamation-circle",
+    warning: "exclamation-triangle",
+    info: "info-circle",
+  }
+  return icons[type] || "info-circle"
+}
+
+function getNotificationContainer() {
+  let container = document.getElementById("notification-container")
+  if (!container) {
+    container = document.createElement("div")
+    container.id = "notification-container"
+    container.className = "notification-container"
+    document.body.appendChild(container)
+  }
+  return container
+}
+
+function formatDate(date, format = "short") {
+  const options = {
+    short: { year: "numeric", month: "short", day: "numeric" },
+    long: { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" },
+    time: { hour: "2-digit", minute: "2-digit" },
+  }
+
+  return new Date(date).toLocaleDateString("en-US", options[format])
+}
+
+function formatNumber(number, decimals = 0) {
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(number)
+}
+
+function debounce(func, wait) {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+function throttle(func, limit) {
+  let inThrottle
+  return function () {
+    const args = arguments
+    
+    if (!inThrottle) {
+      func.apply(this, args)
+      inThrottle = true
+      setTimeout(() => (inThrottle = false), limit)
+    }
+  }
+}
+
+// Authentication helpers
+function clearAuthData() {
+  localStorage.removeItem("authToken")
+  localStorage.removeItem("currentUser")
+  authToken = null
+  currentUser = null
+}
+
+function redirectToLogin() {
+  if (window.location.pathname !== "/login.html" && window.location.pathname !== "/") {
+    window.location.href = "/login.html"
+  }
+}
+
+function redirectToDashboard() {
+  window.location.href = "/dashboard.html"
+}
+
+function requireAuth() {
+  if (!authToken || !currentUser) {
+    redirectToLogin()
+    return false
+  }
+  return true
+}
+
+function hasRole(role) {
+  if (!currentUser || !currentUser.roles) {
+    return false
+  }
+  return currentUser.roles.includes(role)
+}
+
+// Loading states
+function showLoading(element) {
+  if (typeof element === "string") {
+    element = document.getElementById(element)
+  }
+  if (element) {
+    element.classList.add("loading")
+    element.disabled = true
+  }
+}
+
+function hideLoading(element) {
+  if (typeof element === "string") {
+    element = document.getElementById(element)
+  }
+  if (element) {
+    element.classList.remove("loading")
+    element.disabled = false
+  }
+}
+
+// Form validation helpers
+function validateEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return re.test(email)
+}
+
+function validatePassword(password) {
+  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
+  const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/
+  return re.test(password)
+}
+
+function getPasswordStrength(password) {
+  let strength = 0
+  if (password.length >= 8) strength++
+  if (/[a-z]/.test(password)) strength++
+  if (/[A-Z]/.test(password)) strength++
+  if (/\d/.test(password)) strength++
+  if (/[@$!%*?&]/.test(password)) strength++
+
+  return {
+    score: strength,
+    text: ["Very Weak", "Weak", "Fair", "Good", "Strong"][strength] || "Very Weak",
+  }
+}
+
+// Export functions for use in other files
+window.TPMS = {
+  showNotification,
+  formatDate,
+  formatNumber,
+  debounce,
+  throttle,
+  clearAuthData,
+  redirectToLogin,
+  redirectToDashboard,
+  requireAuth,
+  hasRole,
+  showLoading,
+  hideLoading,
+  validateEmail,
+  validatePassword,
+  getPasswordStrength,
+  showModal,
+  hideModal,
+}

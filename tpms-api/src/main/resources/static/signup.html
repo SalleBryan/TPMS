@@ -1,160 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up - TPMS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="css/auth-styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - TPMS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="auth-layout">
-    <div class="auth-visual">
-      <div class="visual-content">
-        <div class="visual-card floating-1">
-          <div class="card-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <div class="card-content">
-            <h4>Team Collaboration</h4>
-            <p>Work together seamlessly</p>
-          </div>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>TPMS</span>
+                </div>
+                <h1>Create Account</h1>
+                <p>Join our training and placement community</p>
+            </div>
+
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="field-feedback" id="usernameFeedback"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="field-feedback" id="emailFeedback"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar">
+                            <div class="strength-fill"></div>
+                        </div>
+                        <div class="strength-text">Password strength</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="field-feedback" id="confirmPasswordFeedback"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="role">I am a...</label>
+                    <div class="role-selection">
+                        <label class="role-option">
+                            <input type="radio" name="role" value="ROLE_STUDENT" checked>
+                            <div class="role-card">
+                                <i class="fas fa-user-graduate"></i>
+                                <span>Student</span>
+                            </div>
+                        </label>
+                        <label class="role-option">
+                            <input type="radio" name="role" value="ROLE_TRAINER">
+                            <div class="role-card">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>Trainer</span>
+                            </div>
+                        </label>
+                        <label class="role-option">
+                            <input type="radio" name="role" value="ROLE_RECRUITER">
+                            <div class="role-card">
+                                <i class="fas fa-briefcase"></i>
+                                <span>Recruiter</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <span class="checkmark"></span>
+                        I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="signupBtn">
+                    <span class="btn-text">Create Account</span>
+                    <span class="btn-loader" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                </button>
+
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="login.html">Sign in here</a></p>
+                </div>
+            </form>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
         </div>
-        <div class="visual-card floating-2">
-          <div class="card-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <div class="card-content">
-            <h4>Progress Tracking</h4>
-            <p>Monitor your growth</p>
-          </div>
+
+        <div class="auth-background">
+            <div class="auth-pattern"></div>
         </div>
-        <div class="visual-card floating-3">
-          <div class="card-icon">
-            <i class="fas fa-graduation-cap"></i>
-          </div>
-          <div class="card-content">
-            <h4>Smart Learning</h4>
-            <p>AI-powered recommendations</p>
-          </div>
-        </div>
-      </div>
     </div>
-    
-    <div class="auth-form-container">
-      <div class="auth-form-wrapper">
-        <div class="auth-header">
-          <h1 class="logo">TPMS</h1>
-          <h2>Create your account</h2>
-          <p>Start your professional development journey today</p>
-        </div>
 
-        <form id="signupForm" class="auth-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="firstName">First Name</label>
-              <div class="input-wrapper">
-                <i class="fas fa-user"></i>
-                <input type="text" id="firstName" name="firstName" required>
-              </div>
-              <span class="error-message" id="firstNameError"></span>
-            </div>
-            <div class="form-group">
-              <label for="lastName">Last Name</label>
-              <div class="input-wrapper">
-                <i class="fas fa-user"></i>
-                <input type="text" id="lastName" name="lastName" required>
-              </div>
-              <span class="error-message" id="lastNameError"></span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="username">Username</label>
-            <div class="input-wrapper">
-              <i class="fas fa-at"></i>
-              <input type="text" id="username" name="username" required>
-            </div>
-            <span class="error-message" id="usernameError"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <div class="input-wrapper">
-              <i class="fas fa-envelope"></i>
-              <input type="email" id="email" name="email" required>
-            </div>
-            <span class="error-message" id="emailError"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="password">Password</label>
-            <div class="input-wrapper">
-              <i class="fas fa-lock"></i>
-              <input type="password" id="password" name="password" required>
-              <button type="button" class="toggle-password" data-target="password">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-            <span class="error-message" id="passwordError"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="confirmPassword">Confirm Password</label>
-            <div class="input-wrapper">
-              <i class="fas fa-lock"></i>
-              <input type="password" id="confirmPassword" name="confirmPassword" required>
-              <button type="button" class="toggle-password" data-target="confirmPassword">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-            <span class="error-message" id="confirmPasswordError"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="roles">Roles</label>
-            <div class="select-wrapper">
-              <i class="fas fa-briefcase"></i>
-              <select id="roles" name="roles" required>
-                <option value="">Select your roles</option>
-                <option value="ROLE_STUDENT">Student</option>
-                <option value="ROLE_TRAINER">Instructor</option>
-                <option value="ROLE_RECRUITER">Recruiter</option>
-              </select>
-            </div>
-            <span class="error-message" id="roleError"></span>
-          </div>
-
-          <div class="form-checkbox">
-            <label class="checkbox-wrapper">
-              <input type="checkbox" id="termsAccepted" required>
-              <span class="checkmark"></span>
-              <span>I agree to the <a href="#" class="link">Terms of Service</a> and <a href="#" class="link">Privacy Policy</a></span>
-            </label>
-            <span class="error-message" id="termsError"></span>
-          </div>
-
-          <button type="submit" class="btn-primary" id="submitBtn">
-            <span class="btn-text">Create Account</span>
-            <div class="btn-loader hidden">
-              <div class="spinner"></div>
-            </div>
-          </button>
-
-          <div class="message-container">
-            <div id="successMessage" class="success-message hidden"></div>
-            <div id="errorMessage" class="error-message-global hidden"></div>
-          </div>
-        </form>
-
-        <div class="auth-footer">
-          <p>Already have an account? <a href="login.html" class="link">Sign in</a></p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/signup.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/signup.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

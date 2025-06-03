@@ -1,337 +1,734 @@
-// API Base URL
-const API_BASE_URL = "http://localhost:8080"
+// Signup page specific JavaScript
 
-// DOM Elements
-const signupForm = document.getElementById("signupForm")
-const submitBtn = document.getElementById("submitBtn")
-const btnText = submitBtn.querySelector(".btn-text")
-const btnLoader = submitBtn.querySelector(".btn-loader")
-const successMessage = document.getElementById("successMessage")
-const errorMessage = document.getElementById("errorMessage")
-
-// Password toggle functionality
-document.querySelectorAll(".toggle-password").forEach((toggle) => {
-  toggle.addEventListener("click", function () {
-    const targetId = this.getAttribute("data-target")
-    const targetInput = document.getElementById(targetId)
-    const icon = this.querySelector("i")
-
-    if (targetInput.type === "password") {
-      targetInput.type = "text"
-      icon.classList.remove("fa-eye")
-      icon.classList.add("fa-eye-slash")
-    } else {
-      targetInput.type = "password"
-      icon.classList.remove("fa-eye-slash")
-      icon.classList.add("fa-eye")
-    }
-  })
+document.addEventListener("DOMContentLoaded", () => {
+  initializeSignup()
 })
 
-// Form validation
-function validateForm() {
-  let isValid = true
-  clearErrors()
-
-  // Get form values
-  const firstName = document.getElementById("firstName").value.trim()
-  const lastName = document.getElementById("lastName").value.trim()
-  const username = document.getElementById("username").value.trim()
-  const email = document.getElementById("email").value.trim()
-  const password = document.getElementById("password").value
-  const confirmPassword = document.getElementById("confirmPassword").value
-  const roles = document.getElementById("roles").value
-  const termsAccepted = document.getElementById("termsAccepted").checked
-
-  // First Name validation
-  if (!firstName) {
-    showError("firstNameError", "First name is required")
-    isValid = false
-  } else if (firstName.length < 2) {
-    showError("firstNameError", "First name must be at least 2 characters")
-    isValid = false
-  }
-
-  // Last Name validation
-  if (!lastName) {
-    showError("lastNameError", "Last name is required")
-    isValid = false
-  } else if (lastName.length < 2) {
-    showError("lastNameError", "Last name must be at least 2 characters")
-    isValid = false
-  }
-
-  // Username validation
-  if (!username) {
-    showError("usernameError", "Username is required")
-    isValid = false
-  } else if (username.length < 3) {
-    showError("usernameError", "Username must be at least 3 characters")
-    isValid = false
-  } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-    showError("usernameError", "Username can only contain letters, numbers, and underscores")
-    isValid = false
-  }
-
-  // Email validation
-  if (!email) {
-    showError("emailError", "Email is required")
-    isValid = false
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showError("emailError", "Please enter a valid email address")
-    isValid = false
-  }
-
-  // Password validation
-  if (!password) {
-    showError("passwordError", "Password is required")
-    isValid = false
-  } else if (password.length < 8) {
-    showError("passwordError", "Password must be at least 8 characters")
-    isValid = false
-  } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-    showError(
-      "passwordError",
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-    )
-    isValid = false
-  }
-
-  // Confirm Password validation
-  if (!confirmPassword) {
-    showError("confirmPasswordError", "Please confirm your password")
-    isValid = false
-  } else if (password !== confirmPassword) {
-    showError("confirmPasswordError", "Passwords do not match")
-    isValid = false
-  }
-
-  // Roles validation
-  if (!roles) {
-    showError("roleError", "Please select a roles")
-    isValid = false
-  }
-
-  // Terms validation
-  if (!termsAccepted) {
-    showError("termsError", "You must accept the Terms of Service and Privacy Policy")
-    isValid = false
-  }
-
-  return isValid
-}
-
-function showError(elementId, message) {
-  const errorElement = document.getElementById(elementId)
-  if (errorElement) {
-    errorElement.textContent = message
-    errorElement.style.display = "block"
-  }
-}
-
-function clearErrors() {
-  const errorElements = document.querySelectorAll(".error-message")
-  errorElements.forEach((element) => {
-    element.textContent = ""
-    element.style.display = "none"
-  })
-  hideMessage(successMessage)
-  hideMessage(errorMessage)
-}
-
-function showMessage(element, message, isSuccess = false) {
-  element.textContent = message
-  element.classList.remove("hidden")
-  element.style.display = "block"
-
-  if (isSuccess) {
-    setTimeout(() => {
-      window.location.href = "login.html"
-    }, 2000)
-  }
-}
-
-function hideMessage(element) {
-  element.classList.add("hidden")
-  element.style.display = "none"
-}
-
-function setLoading(loading) {
-  if (loading) {
-    submitBtn.disabled = true
-    btnText.style.opacity = "0"
-    btnLoader.classList.remove("hidden")
-    signupForm.classList.add("loading")
-  } else {
-    submitBtn.disabled = false
-    btnText.style.opacity = "1"
-    btnLoader.classList.add("hidden")
-    signupForm.classList.remove("loading")
-  }
-}
-
-// Form submission
-signupForm.addEventListener("submit", async (e) => {
-  e.preventDefault()
-
-  if (!validateForm()) {
+function initializeSignup() {
+  // Check if user is already logged in
+  if (localStorage.getItem("authToken") || sessionStorage.getItem("authToken")) {
+    if (typeof TPMS !== "undefined" && TPMS.redirectToDashboard) {
+      TPMS.redirectToDashboard()
+    }
     return
   }
 
-  setLoading(true)
+  // Initialize form validation
+  setupSignupValidation()
 
-  // Prepare form data
-  const formData = {
-    // firstName: document.getElementById("firstName").value.trim(),
-    // lastName: document.getElementById("lastName").value.trim(),
-    username: document.getElementById("username").value.trim(),
-    email: document.getElementById("email").value.trim(),
-    password: document.getElementById("password").value,
-    roles: [document.getElementById("roles").value]
+  // Handle role selection from URL
+  handleRoleFromURL()
+
+  // Focus on first field
+  const usernameField = document.getElementById("username")
+  if (usernameField) {
+    usernameField.focus()
+  }
+}
+
+function setupSignupValidation() {
+  const form = document.getElementById("signupForm")
+  if (!form) return
+
+  // Real-time validation for all fields
+  const fields = {
+    username: {
+      element: document.getElementById("username"),
+      feedback: document.getElementById("usernameFeedback"),
+      validator: validateUsernameField,
+    },
+    email: {
+      element: document.getElementById("email"),
+      feedback: document.getElementById("emailFeedback"),
+      validator: validateEmailField,
+    },
+    password: {
+      element: document.getElementById("password"),
+      feedback: null,
+      validator: validatePasswordField,
+    },
+    confirmPassword: {
+      element: document.getElementById("confirmPassword"),
+      feedback: document.getElementById("confirmPasswordFeedback"),
+      validator: validateConfirmPasswordField,
+    },
   }
 
+  // Set up event listeners for each field
+  Object.values(fields).forEach((field) => {
+    if (field.element) {
+      field.element.addEventListener(
+        "input",
+        debounce(() => {
+          field.validator()
+        }, 300),
+      )
+
+      field.element.addEventListener("blur", () => {
+        field.validator()
+      })
+    }
+  })
+
+  // Password strength indicator
+  const passwordField = document.getElementById("password")
+  if (passwordField) {
+    passwordField.addEventListener("input", updatePasswordStrength)
+  }
+
+  // Form submission
+  form.addEventListener("submit", handleSignupSubmit)
+}
+
+async function validateUsernameField() {
+  const input = document.getElementById("username")
+  const feedback = document.getElementById("usernameFeedback")
+  const username = input.value.trim()
+
+  // Clear previous state
+  clearFieldState(input, feedback)
+
+  if (!username) {
+    return false
+  }
+
+  // Length check
+  if (username.length < 3) {
+    setFieldError(input, feedback, "Username must be at least 3 characters long")
+    return false
+  }
+
+  if (username.length > 20) {
+    setFieldError(input, feedback, "Username must be less than 20 characters")
+    return false
+  }
+
+  // Character check
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    setFieldError(input, feedback, "Username can only contain letters, numbers, and underscores")
+    return false
+  }
+
+  // Reserved usernames
+  const reserved = ["admin", "root", "system", "test", "demo"]
+  if (reserved.includes(username.toLowerCase())) {
+    setFieldError(input, feedback, "This username is reserved")
+    return false
+  }
+
+  // Check availability
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+    setFieldLoading(input, feedback, "Checking availability...")
+
+    const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`)
+    const data = await response.json()
+
+    if (response.ok) {
+      if (data.available) {
+        setFieldSuccess(input, feedback, "Username is available")
+        return true
+      } else {
+        setFieldError(input, feedback, "Username is already taken")
+        return false
+      }
+    } else {
+      setFieldError(input, feedback, "Unable to check username availability")
+      return false
+    }
+  } catch (error) {
+    console.error("Username check error:", error)
+    setFieldError(input, feedback, "Network error checking username")
+    return false
+  }
+}
+
+async function validateEmailField() {
+  const input = document.getElementById("email")
+  const feedback = document.getElementById("emailFeedback")
+  const email = input.value.trim()
+
+  clearFieldState(input, feedback)
+
+  if (!email) {
+    return false
+  }
+
+  // Email format validation
+  if (!validateEmail(email)) {
+    setFieldError(input, feedback, "Please enter a valid email address")
+    return false
+  }
+
+  // Check availability
+  try {
+    setFieldLoading(input, feedback, "Checking availability...")
+
+    const response = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`)
+    const data = await response.json()
+
+    if (response.ok) {
+      if (data.available) {
+        setFieldSuccess(input, feedback, "Email is available")
+        return true
+      } else {
+        setFieldError(input, feedback, "Email is already registered")
+        return false
+      }
+    } else {
+      setFieldError(input, feedback, "Unable to check email availability")
+      return false
+    }
+  } catch (error) {
+    console.error("Email check error:", error)
+    setFieldError(input, feedback, "Network error checking email")
+    return false
+  }
+}
+
+function validatePasswordField() {
+  const input = document.getElementById("password")
+  const password = input.value
+
+  clearFieldState(input)
+
+  if (!password) {
+    return false
+  }
+
+  if (!validatePassword(password)) {
+    setFieldError(input, null, "")
+    return false
+  }
+
+  setFieldSuccess(input, null, "")
+
+  // Also validate confirm password if it has a value
+  const confirmInput = document.getElementById("confirmPassword")
+  if (confirmInput && confirmInput.value) {
+    validateConfirmPasswordField()
+  }
+
+  return true
+}
+
+function validateConfirmPasswordField() {
+  const passwordInput = document.getElementById("password")
+  const confirmInput = document.getElementById("confirmPassword")
+  const feedback = document.getElementById("confirmPasswordFeedback")
+
+  const password = passwordInput.value
+  const confirmPassword = confirmInput.value
+
+  clearFieldState(confirmInput, feedback)
+
+  if (!confirmPassword) {
+    return false
+  }
+
+  if (password !== confirmPassword) {
+    setFieldError(confirmInput, feedback, "Passwords do not match")
+    return false
+  }
+
+  setFieldSuccess(confirmInput, feedback, "Passwords match")
+  return true
+}
+
+function updatePasswordStrength() {
+  const passwordInput = document.getElementById("password")
+  const strengthBar = document.querySelector(".strength-fill")
+  const strengthText = document.querySelector(".strength-text")
+
+  if (!passwordInput || !strengthBar || !strengthText) return
+
+  const password = passwordInput.value
+  const strength = getPasswordStrength(password)
+
+  const colors = ["#ef4444", "#f59e0b", "#f59e0b", "#10b981", "#10b981"]
+  const widths = [20, 40, 60, 80, 100]
+
+  strengthBar.style.width = (password.length > 0 ? widths[strength.score] : 0) + "%"
+  strengthBar.style.backgroundColor = colors[strength.score]
+  strengthText.textContent = password.length > 0 ? strength.text : "Password strength"
+
+  // Add requirements checklist
+  updatePasswordRequirements(password)
+}
+
+function updatePasswordRequirements(password) {
+  const requirements = [
+    { test: password.length >= 8, text: "At least 8 characters" },
+    { test: /[a-z]/.test(password), text: "One lowercase letter" },
+    { test: /[A-Z]/.test(password), text: "One uppercase letter" },
+    { test: /\d/.test(password), text: "One number" },
+    { test: /[@$!%*?&]/.test(password), text: "One special character" },
+  ]
+
+  let requirementsList = document.querySelector(".password-requirements")
+  if (!requirementsList && password.length > 0) {
+    requirementsList = document.createElement("div")
+    requirementsList.className = "password-requirements"
+
+    const passwordGroup = document.getElementById("password").closest(".form-group")
+    passwordGroup.appendChild(requirementsList)
+  }
+
+  if (requirementsList) {
+    if (password.length === 0) {
+      requirementsList.remove()
+      return
+    }
+
+    requirementsList.innerHTML = requirements
+      .map(
+        (req) => `
+            <div class="requirement ${req.test ? "met" : "unmet"}">
+                <i class="fas fa-${req.test ? "check" : "times"}"></i>
+                <span>${req.text}</span>
+            </div>
+        `,
+      )
+      .join("")
+  }
+}
+
+async function handleSignupSubmit(event) {
+  event.preventDefault()
+
+  const form = event.target
+  const submitBtn = form.querySelector('button[type="submit"]')
+
+  // Validate all fields
+  const validations = await Promise.all([
+    validateUsernameField(),
+    validateEmailField(),
+    validatePasswordField(),
+    validateConfirmPasswordField(),
+  ])
+
+  const isValid = validations.every((v) => v === true)
+
+  // Check terms agreement
+  const agreeTerms = form.agreeTerms.checked
+  if (!agreeTerms) {
+    showNotification("Please agree to the Terms of Service and Privacy Policy", "error")
+    return
+  }
+
+  if (!isValid) {
+    showNotification("Please fix the errors above", "error")
+    return
+  }
+
+  // Prepare data
+  const formData = new FormData(form)
+  const userData = {
+    username: formData.get("username").trim(),
+    email: formData.get("email").trim(),
+    password: formData.get("password"),
+    roles: [formData.get("role")],
+  }
+
+  // Show loading state
+  showLoading(submitBtn)
+  hideMessages()
+
+  try {
+    const response = await fetch("/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(userData),
     })
 
-    const data = await response.json()
-
     if (response.ok) {
-      showMessage(successMessage, "Account created successfully! Redirecting to login...", true)
-      window.location.href = "/login.html"
+      const data = await response.json()
+      handleSignupSuccess(data)
     } else {
-      // Handle specific error cases
-      if (response.status === 409) {
-        showMessage(errorMessage, data.message || "Username or email already exists")
-      } else if (response.status === 400) {
-        showMessage(errorMessage, data.message || "Invalid input data")
-      } else {
-        showMessage(errorMessage, data.message || "Failed to create account. Please try again.")
-      }
+      const errorData = await response.json()
+      handleSignupError(response.status, errorData)
     }
   } catch (error) {
     console.error("Signup error:", error)
-    showMessage(errorMessage, "Network error. Please check your connection and try again.")
+    handleNetworkError()
   } finally {
-    setLoading(false)
+    hideLoading(submitBtn)
   }
-})
+}
 
-// Real-time validation
-document.getElementById("username").addEventListener("blur", async function () {
-  const username = this.value.trim()
-  if (username && username.length >= 3) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/check-username?username=${encodeURIComponent(username)}`)
-      if (response.status === 409) {
-        showError("usernameError", "Username is already taken")
+function handleSignupSuccess(data) {
+  showSuccess("Account created successfully! Redirecting to login...")
+
+  // Add success animation
+  document.querySelector(".auth-card").classList.add("signup-success")
+
+  // Redirect to login page
+  setTimeout(() => {
+    window.location.href = "/login.html"
+  }, 2000)
+}
+
+function handleSignupError(status, errorData) {
+  let message = "Registration failed. Please try again."
+
+  switch (status) {
+    case 400:
+      message = errorData.message || "Invalid data provided."
+      break
+    case 409:
+      message = "Username or email already exists."
+      break
+    case 429:
+      message = "Too many registration attempts. Please try again later."
+      break
+    case 500:
+      message = "Server error. Please try again later."
+      break
+    default:
+      message = errorData.message || message
+  }
+
+  showError(message)
+
+  // Add shake animation
+  const authCard = document.querySelector(".auth-card")
+  authCard.classList.add("shake")
+  setTimeout(() => {
+    authCard.classList.remove("shake")
+  }, 500)
+}
+
+function handleNetworkError() {
+  showError("Network error. Please check your connection and try again.")
+}
+
+function handleRoleFromURL() {
+  const urlParams = new URLSearchParams(window.location.search)
+  const role = urlParams.get("role")
+
+  if (role) {
+    const roleMap = {
+      student: "ROLE_STUDENT",
+      trainer: "ROLE_TRAINER",
+      recruiter: "ROLE_RECRUITER",
+    }
+
+    const roleValue = roleMap[role.toLowerCase()]
+    if (roleValue) {
+      const roleInput = document.querySelector(`input[value="${roleValue}"]`)
+      if (roleInput) {
+        roleInput.checked = true
+
+        // Highlight the selected role
+        const roleCard = roleInput.closest(".role-option")
+        if (roleCard) {
+          roleCard.classList.add("pre-selected")
+        }
       }
-    } catch (error) {
-      console.error("Username check error:", error)
     }
   }
-})
+}
 
-document.getElementById("email").addEventListener("blur", async function () {
-  const email = this.value.trim()
-  if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/check-email?email=${encodeURIComponent(email)}`)
-      if (response.status === 409) {
-        showError("emailError", "Email is already registered")
-      }
-    } catch (error) {
-      console.error("Email check error:", error)
-    }
+// Field state management functions
+function clearFieldState(input, feedback) {
+  input.classList.remove("error", "success", "loading")
+  if (feedback) {
+    feedback.textContent = ""
+    feedback.className = "field-feedback"
   }
-})
+}
 
-// Password strength indicator
-document.getElementById("password").addEventListener("input", function () {
-  const password = this.value
-  const strengthIndicator = document.querySelector(".password-strength") || createPasswordStrengthIndicator()
+function setFieldError(input, feedback, message) {
+  input.classList.remove("success", "loading")
+  input.classList.add("error")
+  if (feedback) {
+    feedback.textContent = message
+    feedback.className = "field-feedback error"
+  }
+}
 
-  let strength = 0
-  const feedback = []
+function setFieldSuccess(input, feedback, message) {
+  input.classList.remove("error", "loading")
+  input.classList.add("success")
+  if (feedback) {
+    feedback.textContent = message
+    feedback.className = "field-feedback success"
+  }
+}
 
-  if (password.length >= 8) strength++
-  else feedback.push("At least 8 characters")
+function setFieldLoading(input, feedback, message) {
+  input.classList.remove("error", "success")
+  input.classList.add("loading")
+  if (feedback) {
+    feedback.textContent = message
+    feedback.className = "field-feedback loading"
+  }
+}
 
-  if (/[a-z]/.test(password)) strength++
-  else feedback.push("One lowercase letter")
+function showError(message) {
+  const errorDiv = document.getElementById("errorMessage")
+  if (errorDiv) {
+    errorDiv.textContent = message
+    errorDiv.style.display = "block"
+  }
+}
 
-  if (/[A-Z]/.test(password)) strength++
-  else feedback.push("One uppercase letter")
+function showSuccess(message) {
+  const successDiv = document.getElementById("successMessage")
+  if (successDiv) {
+    successDiv.textContent = message
+    successDiv.style.display = "block"
+  }
+}
 
-  if (/\d/.test(password)) strength++
-  else feedback.push("One number")
+function hideMessages() {
+  const errorDiv = document.getElementById("errorMessage")
+  const successDiv = document.getElementById("successMessage")
 
-  if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++
+  if (errorDiv) errorDiv.style.display = "none"
+  if (successDiv) successDiv.style.display = "none"
+}
 
-  updatePasswordStrength(strengthIndicator, strength, feedback)
-})
+// Utility functions
+function validateEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return regex.test(email)
+}
 
-function createPasswordStrengthIndicator() {
-  const indicator = document.createElement("div")
-  indicator.className = "password-strength"
-  indicator.innerHTML = `
-        <div class="strength-bar">
-            <div class="strength-fill"></div>
+function validatePassword(password) {
+  return password.length >= 8
+}
+
+function getPasswordStrength(password) {
+  let score = 0
+  if (password.length >= 8) score++
+  if (/[a-z]/.test(password)) score++
+  if (/[A-Z]/.test(password)) score++
+  if (/\d/.test(password)) score++
+  if (/[@$!%*?&]/.test(password)) score++
+
+  let text = "Very Weak"
+  if (score == 1) text = "Weak"
+  if (score == 2) text = "Fair"
+  if (score == 3) text = "Good"
+  if (score == 4) text = "Strong"
+  if (score == 5) text = "Very Strong"
+
+  return { score: Math.min(score, 4), text: text }
+}
+
+function showLoading(button) {
+  button.disabled = true
+  const btnText = button.querySelector(".btn-text")
+  const btnLoader = button.querySelector(".btn-loader")
+  if (btnText) btnText.style.display = "none"
+  if (btnLoader) btnLoader.style.display = "inline-flex"
+}
+
+function hideLoading(button) {
+  button.disabled = false
+  const btnText = button.querySelector(".btn-text")
+  const btnLoader = button.querySelector(".btn-loader")
+  if (btnText) btnText.style.display = "inline"
+  if (btnLoader) btnLoader.style.display = "none"
+}
+
+function showNotification(message, type = "info") {
+  const container = document.querySelector(".notification-container") || createNotificationContainer()
+  const notification = document.createElement("div")
+  notification.classList.add("notification", `notification-${type}`, "show")
+  notification.innerHTML = `
+        <div class="notification-content">
+            <span>${message}</span>
         </div>
-        <div class="strength-text"></div>
+        <button class="notification-close">&times;</button>
     `
+  container.appendChild(notification)
 
-  const passwordGroup = document.getElementById("password").closest(".form-group")
-  passwordGroup.appendChild(indicator)
+  // Close button functionality
+  notification.querySelector(".notification-close").addEventListener("click", () => {
+    notification.classList.remove("show")
+    setTimeout(() => notification.remove(), 300)
+  })
 
-  // Add styles
-  const style = document.createElement("style")
-  style.textContent = `
-        .password-strength {
-            margin-top: 8px;
-        }
-        .strength-bar {
-            height: 4px;
-            background: #e5e7eb;
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 4px;
-        }
-        .strength-fill {
-            height: 100%;
-            transition: all 0.3s ease;
-            border-radius: 2px;
-        }
-        .strength-text {
-            font-size: 0.75rem;
-            color: #6b7280;
-        }
-    `
-  document.head.appendChild(style)
-
-  return indicator
+  // Auto-close after 5 seconds
+  setTimeout(() => {
+    notification.classList.remove("show")
+    setTimeout(() => notification.remove(), 300)
+  }, 5000)
 }
 
-function updatePasswordStrength(indicator, strength, feedback) {
-  const fill = indicator.querySelector(".strength-fill")
-  const text = indicator.querySelector(".strength-text")
+function createNotificationContainer() {
+  const container = document.createElement("div")
+  container.classList.add("notification-container")
+  document.body.appendChild(container)
+  return container
+}
 
-  const colors = ["#ef4444", "#f59e0b", "#f59e0b", "#10b981", "#059669"]
-  const labels = ["Weak", "Fair", "Good", "Strong", "Very Strong"]
-
-  fill.style.width = `${(strength / 5) * 100}%`
-  fill.style.background = colors[strength - 1] || "#e5e7eb"
-
-  if (strength === 0) {
-    text.textContent = ""
-  } else if (strength < 4) {
-    text.textContent = `${labels[strength - 1]} - Missing: ${feedback.join(", ")}`
-  } else {
-    text.textContent = labels[strength - 1]
+// Debounce function
+function debounce(func, wait) {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
   }
 }
+
+// Add CSS for additional styling
+const style = document.createElement("style")
+style.textContent = `
+    .field-feedback.loading {
+        color: var(--info-color);
+    }
+    
+    .field-feedback.loading::before {
+        content: '';
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--info-color);
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+    
+    .password-requirements {
+        margin-top: var(--spacing-2);
+        padding: var(--spacing-3);
+        background-color: var(--gray-50);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--gray-200);
+    }
+    
+    .requirement {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--font-size-sm);
+        margin-bottom: var(--spacing-1);
+    }
+    
+    .requirement:last-child {
+        margin-bottom: 0;
+    }
+    
+    .requirement.met {
+        color: var(--success-color);
+    }
+    
+    .requirement.unmet {
+        color: var(--gray-500);
+    }
+    
+    .requirement i {
+        width: 12px;
+        text-align: center;
+    }
+    
+    .role-option.pre-selected .role-card {
+        border-color: var(--primary-color);
+        background-color: rgba(37, 99, 235, 0.05);
+        animation: highlight 2s ease-in-out;
+    }
+    
+    .auth-card.signup-success {
+        animation: success-bounce 1s ease-in-out;
+    }
+    
+    @keyframes highlight {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+    }
+    
+    @keyframes success-bounce {
+        0%, 100% { transform: scale(1); }
+        25% { transform: scale(1.02); }
+        50% { transform: scale(1.05); }
+        75% { transform: scale(1.02); }
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .input-group input.loading {
+        background-image: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+        background-size: 200% 100%;
+        animation: loading-shimmer 1.5s infinite;
+    }
+    
+    @keyframes loading-shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .notification {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 300px;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-out;
+    }
+    
+    .notification.show {
+        transform: translateX(0);
+    }
+    
+    .notification-success {
+        border-left: 4px solid var(--success-color);
+    }
+    
+    .notification-error {
+        border-left: 4px solid var(--error-color);
+    }
+    
+    .notification-warning {
+        border-left: 4px solid var(--warning-color);
+    }
+    
+    .notification-info {
+        border-left: 4px solid var(--info-color);
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+    }
+    
+    .notification-close {
+        background: none;
+        border: none;
+        color: var(--gray-500);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+    }
+    
+    .notification-close:hover {
+        background-color: var(--gray-100);
+    }
+`
+document.head.appendChild(style)

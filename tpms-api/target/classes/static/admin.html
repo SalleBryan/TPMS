@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - TPMS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Include sidebar from dashboard -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>TPMS Admin</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item active" onclick="loadAdminSection('overview')">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('users')">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('students')">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Students</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('trainers')">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Trainers</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('recruiters')">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Recruiters</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('trainings')">
+                    <i class="fas fa-book"></i>
+                    <span>Trainings</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('jobs')">
+                    <i class="fas fa-suitcase"></i>
+                    <span>Jobs</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('interviews')">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Interviews</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('reports')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="nav-item" onclick="loadAdminSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1 id="adminPageTitle">System Overview</h1>
+                <div class="admin-actions">
+                    <button class="btn btn-primary" onclick="showAddModal()">
+                        <i class="fas fa-plus"></i>
+                        Add New
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-content" id="adminContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit operations -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Item</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Form content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/admin.js"></script>
+    <!-- <script src="js/main.js"></script> -->
+</body>
+</html>

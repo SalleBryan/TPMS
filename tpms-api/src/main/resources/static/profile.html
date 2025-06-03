@@ -1,352 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile - TPMS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="css/auth-styles.css">
-  <style>
-    body {
-      background: var(--md-sys-color-surface);
-      min-height: 100vh;
-    }
-
-    .profile-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    .profile-header {
-      background: var(--md-sys-color-surface-container);
-      padding: 2rem;
-      border-radius: var(--md-sys-shape-corner-large);
-      margin-bottom: 2rem;
-      text-align: center;
-      box-shadow: var(--md-sys-elevation-level1);
-    }
-
-    .profile-avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--md-sys-color-on-primary);
-      font-size: 3rem;
-      font-weight: 700;
-      margin: 0 auto 1rem;
-      position: relative;
-      cursor: pointer;
-      transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
-    }
-
-    .profile-avatar:hover {
-      transform: scale(1.05);
-      box-shadow: var(--md-sys-elevation-level3);
-    }
-
-    .profile-avatar .edit-icon {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      background: var(--md-sys-color-primary);
-      color: var(--md-sys-color-on-primary);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      border: 3px solid var(--md-sys-color-surface);
-    }
-
-    .profile-name {
-      font-size: var(--md-sys-typescale-headline-medium-font-size);
-      font-weight: 600;
-      color: var(--md-sys-color-on-surface);
-      margin-bottom: 0.5rem;
-    }
-
-    .profile-role {
-      color: var(--md-sys-color-on-surface-variant);
-      font-size: var(--md-sys-typescale-body-large-font-size);
-      text-transform: capitalize;
-    }
-
-    .profile-card {
-      background: var(--md-sys-color-surface-container);
-      border-radius: var(--md-sys-shape-corner-large);
-      padding: 2rem;
-      box-shadow: var(--md-sys-elevation-level1);
-      margin-bottom: 2rem;
-    }
-
-    .profile-card h3 {
-      font-size: var(--md-sys-typescale-title-large-font-size);
-      font-weight: 600;
-      color: var(--md-sys-color-on-surface);
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .profile-card h3 i {
-      color: var(--md-sys-color-primary);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .form-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .readonly-field {
-      background: var(--md-sys-color-surface-variant);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      color: var(--md-sys-color-on-surface-variant);
-      cursor: not-allowed;
-    }
-
-    .readonly-field:focus {
-      border-color: var(--md-sys-color-outline-variant);
-      box-shadow: none;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-
-    .btn-secondary {
-      background: var(--md-sys-color-surface);
-      color: var(--md-sys-color-on-surface);
-      border: 1px solid var(--md-sys-color-outline);
-      padding: 12px 24px;
-      border-radius: var(--md-sys-shape-corner-large);
-      font-size: var(--md-sys-typescale-label-large-font-size);
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-secondary:hover {
-      background: var(--md-sys-color-surface-variant);
-      border-color: var(--md-sys-color-primary);
-      transform: translateY(-1px);
-    }
-
-    .toast {
-      position: fixed;
-      top: 2rem;
-      right: 2rem;
-      background: var(--md-sys-color-success-container);
-      color: var(--md-sys-color-on-success-container);
-      padding: 1rem 1.5rem;
-      border-radius: var(--md-sys-shape-corner-medium);
-      box-shadow: var(--md-sys-elevation-level3);
-      z-index: 1000;
-      transform: translateX(400px);
-      transition: transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      border-left: 4px solid var(--md-sys-color-success);
-    }
-
-    .toast.show {
-      transform: translateX(0);
-    }
-
-    .toast.error {
-      background: var(--md-sys-color-error-container);
-      color: var(--md-sys-color-on-error-container);
-      border-left-color: var(--md-sys-color-error);
-    }
-
-    .toast i {
-      font-size: 1.2rem;
-    }
-
-    .navigation-bar {
-      background: var(--md-sys-color-surface-container);
-      padding: 1rem 0;
-      margin-bottom: 2rem;
-      border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    }
-
-    .nav-content {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .nav-back {
-      color: var(--md-sys-color-primary);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 500;
-      transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
-    }
-
-    .nav-back:hover {
-      transform: translateX(-2px);
-    }
-
-    .nav-title {
-      font-size: var(--md-sys-typescale-title-large-font-size);
-      font-weight: 600;
-      color: var(--md-sys-color-on-surface);
-    }
-
-    @media (max-width: 768px) {
-      .profile-container {
-        padding: 1rem;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-
-      .action-buttons {
-        flex-direction: column;
-      }
-
-      .nav-content {
-        padding: 0 1rem;
-      }
-
-      .toast {
-        right: 1rem;
-        left: 1rem;
-        transform: translateY(-100px);
-      }
-
-      .toast.show {
-        transform: translateY(0);
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - TPMS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <nav class="navigation-bar">
-    <div class="nav-content">
-      <a href="dashboard.html" class="nav-back">
-        <i class="fas fa-arrow-left"></i>
-        Back to Dashboard
-      </a>
-      <h1 class="nav-title">Profile Settings</h1>
+    <div class="profile-container">
+        <nav class="breadcrumb">
+            <a href="dashboard.html">Dashboard</a>
+            <span>/</span>
+            <span>Profile</span>
+        </nav>
+
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <div class="avatar-circle">
+                    <i class="fas fa-user"></i>
+                </div>
+                <button class="avatar-upload">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="profile-info">
+                <h1 id="profileName">Loading...</h1>
+                <p id="profileRole">Loading...</p>
+                <div class="profile-stats">
+                    <div class="stat" id="profileStats">
+                        <!-- Stats will be loaded based on user role -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-tabs">
+                <button class="tab-btn active" onclick="switchTab('personal')">Personal Info</button>
+                <button class="tab-btn" onclick="switchTab('academic')" id="academicTab">Academic</button>
+                <button class="tab-btn" onclick="switchTab('professional')" id="professionalTab">Professional</button>
+                <button class="tab-btn" onclick="switchTab('security')">Security</button>
+            </div>
+
+            <div class="tab-content">
+                <!-- Personal Info Tab -->
+                <div class="tab-pane active" id="personalTab">
+                    <form id="personalForm" class="profile-form">
+                        <div class="form-section">
+                            <h3>Basic Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="fullName">Full Name</label>
+                                    <input type="text" id="fullName" name="fullName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input type="tel" id="phone" name="phone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dateOfBirth">Date of Birth</label>
+                                    <input type="date" id="dateOfBirth" name="dateOfBirth">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Address</h3>
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="address">Street Address</label>
+                                    <input type="text" id="address" name="address">
+                                </div>
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <input type="text" id="city" name="city">
+                                </div>
+                                <div class="form-group">
+                                    <label for="state">State</label>
+                                    <input type="text" id="state" name="state">
+                                </div>
+                                <div class="form-group">
+                                    <label for="zipCode">ZIP Code</label>
+                                    <input type="text" id="zipCode" name="zipCode">
+                                </div>
+                                <div class="form-group">
+                                    <label for="country">Country</label>
+                                    <input type="text" id="country" name="country">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm('personalForm')">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Academic Tab (for students) -->
+                <div class="tab-pane" id="academicTab">
+                    <form id="academicForm" class="profile-form">
+                        <div class="form-section">
+                            <h3>Academic Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="studentId">Student ID</label>
+                                    <input type="text" id="studentId" name="studentId" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="department">Department</label>
+                                    <select id="department" name="department">
+                                        <option value="">Select Department</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Information Technology">Information Technology</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Mechanical">Mechanical</option>
+                                        <option value="Civil">Civil</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cgpa">CGPA</label>
+                                    <input type="number" id="cgpa" name="cgpa" step="0.01" min="0" max="10">
+                                </div>
+                                <div class="form-group">
+                                    <label for="graduationYear">Graduation Year</label>
+                                    <input type="number" id="graduationYear" name="graduationYear" min="2020" max="2030">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm('academicForm')">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Professional Tab (for trainers/recruiters) -->
+                <div class="tab-pane" id="professionalTab">
+                    <form id="professionalForm" class="profile-form">
+                        <div class="form-section">
+                            <h3>Professional Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="company">Company/Organization</label>
+                                    <input type="text" id="company" name="company">
+                                </div>
+                                <div class="form-group">
+                                    <label for="position">Position/Title</label>
+                                    <input type="text" id="position" name="position">
+                                </div>
+                                <div class="form-group">
+                                    <label for="experience">Years of Experience</label>
+                                    <input type="number" id="experience" name="experience" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="expertise">Expertise/Skills</label>
+                                    <textarea id="expertise" name="expertise" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm('professionalForm')">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Security Tab -->
+                <div class="tab-pane" id="securityTab">
+                    <form id="securityForm" class="profile-form">
+                        <div class="form-section">
+                            <h3>Change Password</h3>
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="currentPassword">Current Password</label>
+                                    <input type="password" id="currentPassword" name="currentPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword">New Password</label>
+                                    <input type="password" id="newPassword" name="newPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmNewPassword">Confirm New Password</label>
+                                    <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Two-Factor Authentication</h3>
+                            <div class="security-option">
+                                <label class="switch">
+                                    <input type="checkbox" id="twoFactorAuth">
+                                    <span class="slider"></span>
+                                </label>
+                                <div class="option-info">
+                                    <h4>Enable Two-Factor Authentication</h4>
+                                    <p>Add an extra layer of security to your account</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Security</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </nav>
 
-  <div class="profile-container">
-    <div class="profile-header">
-      <div class="profile-avatar" id="profileAvatar">
-        <span id="avatarText">U</span>
-        <div class="edit-icon">
-          <i class="fas fa-camera"></i>
-        </div>
-      </div>
-      <h2 class="profile-name" id="profileName">Loading...</h2>
-      <p class="profile-role" id="profileRole">Loading...</p>
-    </div>
-
-    <form id="profileForm">
-      <div class="profile-card">
-        <h3>
-          <i class="fas fa-user"></i>
-          Basic Information
-        </h3>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="fullName">Full Name</label>
-            <div class="input-wrapper">
-              <i class="fas fa-user"></i>
-              <input type="text" id="fullName" name="fullName" required>
-            </div>
-            <span class="error-message" id="fullNameError"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="username">Username</label>
-            <div class="input-wrapper">
-              <i class="fas fa-at"></i>
-              <input type="text" id="username" name="username" class="readonly-field" readonly>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <div class="input-wrapper">
-              <i class="fas fa-envelope"></i>
-              <input type="email" id="email" name="email" required>
-            </div>
-            <span class="error-message" id="emailError"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="role">Role</label>
-            <div class="input-wrapper">
-              <i class="fas fa-user-tag"></i>
-              <input type="text" id="role" name="role" class="readonly-field" readonly>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Role-specific fields will be inserted here -->
-      <div id="roleSpecificFields"></div>
-
-      <div class="action-buttons">
-        <a href="dashboard.html" class="btn-secondary">
-          <i class="fas fa-times"></i>
-          Cancel
-        </a>
-        <button type="submit" class="btn-primary" id="saveBtn">
-          <span class="btn-text">
-            <i class="fas fa-save"></i>
-            Save Changes
-          </span>
-          <div class="btn-loader hidden">
-            <div class="spinner"></div>
-          </div>
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Toast notification -->
-  <div class="toast" id="toast">
-    <i class="fas fa-check-circle"></i>
-    <span id="toastMessage">Profile updated successfully!</span>
-  </div>
-
-  <script src="js/profile.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/profile.js"></script>
+    <!-- <script src="js/main.js"></script> -->
 </body>
 </html>
