@@ -1,0 +1,55 @@
+package com.tpms.service;
+
+import com.tpms.model.Student;
+import java.util.List;
+
+public interface StudentService {
+    // CRUD methods
+    Student createStudent(Student student);
+    Student getStudentById(Long id);
+    List<Student> getAllStudents();
+    Student updateStudent(Student student);
+    void deleteStudent(Long id);
+
+    // Business-use-case methods
+    void enrollStudentInCourse(Long studentId, Long courseId);
+    List<Student> getStudentsByCourseId(Long courseId);
+}
+package com.tpms.service;
+
+import com.tpms.model.Training;
+import java.util.List;
+
+public interface TrainingService {
+    // CRUD methods
+    Training createTraining(Training training);
+    Training getTrainingById(Long id);
+    List<Training> getAllTrainings();
+    Training updateTraining(Training training);
+    void deleteTraining(Long id);
+
+    // Business-use-case methods
+    void scheduleTraining(Training training);
+    List<Training> getTrainingsByStudentId(Long studentId);
+}
+
+
+package com.tpms.service;
+
+import com.tpms.model.Job;
+import com.tpms.model.Student;
+import java.util.List;
+
+public interface JobService {
+    // CRUD methods
+    Job createJob(Job job);
+    Job getJobById(Long id);
+    List<Job> getAllJobs();
+    Job updateJob(Job job);
+    void deleteJob(Long id);
+
+    // Business-use-case methods
+    void applyForJob(Student student, Job job);
+    List<Job> getJobsByStudentId(Long studentId);
+    void scheduleInterview(Job job, Student student);
+}
