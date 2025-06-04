@@ -60,39 +60,39 @@ function addEnterKeyHandler() {
   }
 }
 
-function addDemoAccountButtons() {
-  // Add demo account buttons for easy testing
-  const authCard = document.querySelector(".auth-card")
-  if (!authCard) return
+// function addDemoAccountButtons() {
+//   // Add demo account buttons for easy testing
+//   const authCard = document.querySelector(".auth-card")
+//   if (!authCard) return
 
-  const demoSection = document.createElement("div")
-  demoSection.className = "demo-accounts"
-  demoSection.innerHTML = `
-        <div class="auth-divider">
-            <span>Demo Accounts</span>
-        </div>
-        <div class="demo-buttons">
-            <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoCredentials('admin')">
-                <i class="fas fa-cog"></i> Admin Demo
-            </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoCredentials('student')">
-                <i class="fas fa-user-graduate"></i> Student Demo
-            </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoCredentials('recruiter')">
-                <i class="fas fa-briefcase"></i> Recruiter Demo
-            </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoCredentials('trainer')">
-                <i class="fas fa-chalkboard-teacher"></i> Trainer Demo
-            </button>
-        </div>
-    `
+//   const demoSection = document.createElement("div")
+//   demoSection.className = "demo-accounts"
+//   demoSection.innerHTML = `
+//         <div class="auth-divider">
+//             <span>Demo Accounts</span>
+//         </div>
+//         <div class="demo-buttons">
+//             <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoCredentials('admin')">
+//                 <i class="fas fa-cog"></i> Admin Demo
+//             </button>
+//             <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoCredentials('student')">
+//                 <i class="fas fa-user-graduate"></i> Student Demo
+//             </button>
+//             <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoCredentials('recruiter')">
+//                 <i class="fas fa-briefcase"></i> Recruiter Demo
+//             </button>
+//             <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoCredentials('trainer')">
+//                 <i class="fas fa-chalkboard-teacher"></i> Trainer Demo
+//             </button>
+//         </div>
+//     `
 
-  // Insert before the auth footer
-  const authFooter = authCard.querySelector(".auth-footer")
-  if (authFooter) {
-    authFooter.parentNode.insertBefore(demoSection, authFooter)
-  }
-}
+//   // Insert before the auth footer
+//   const authFooter = authCard.querySelector(".auth-footer")
+//   if (authFooter) {
+//     authFooter.parentNode.insertBefore(demoSection, authFooter)
+//   }
+// }
 
 function fillDemoCredentials(role) {
   const usernameField = document.getElementById("username")
