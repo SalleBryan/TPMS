@@ -23,7 +23,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
        // value = "SELECT AVG(DATEDIFF('DAY', a.applied_at, i.scheduled_at)) " +
        //        "FROM application a JOIN interview i " +
        //        "ON a.student_id = i.student_id AND a.job_id = i.job_id",
-       // nativeQuery = true
+       // nativeQuery = trueE
        // )
        // Double findAverageTimeToPlacement();
 }
