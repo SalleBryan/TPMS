@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/check-username", "/api/auth/check-email" ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/", "/index.html", "/css/**", "/js/**").permitAll()
                 // .requestMatchers("/dashboard.html", "/**").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
             .and()
             .authenticationProvider(authProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
